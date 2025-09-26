@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gabby's Pattern Game</title>
+    <link rel="stylesheet" type="text/css" href="gabby.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <h1>Gabby's Pattern Game</h1>
+
+    <div id="difficulty-container">
+        <button id="btn-2">2</button>
+        <button id="btn-3">3</button>
+        <button id="btn-4">4</button>
+    </div>
+
+    <div id="game-board">
+        <div id="pattern-container"></div>
+        <div id="user-input-container"></div>
+    </div>
+
+    <div id="character-selection-container"></div>
+
+    <div id="congratulations-container" style="display: none;">
+        <h2 id="congratulations-message"></h2>
+        <div id="congratulations-images"></div>
+    </div>
+
+    <script src="gabby.js"></script>
+</body>
+</html>

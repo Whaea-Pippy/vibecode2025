@@ -1,65 +1,71 @@
-# Blueprint: Paw Patrol Games
+# Blueprint: Kids' Arcade Games
 
 ## Overview
 
-This document outlines the design and features of the Paw Patrol games. The application is designed to be responsive, accessible, and visually engaging for a young audience.
+This document outlines the design and features of a collection of kids' arcade games. The application is a framework-less web project built with modern HTML, CSS, and JavaScript, designed to be responsive, accessible, and visually engaging for a young audience.
 
 ## Games
 
+### Circle Maze Adventure
+
+*   **Objective:** Navigate a character from the outer edge of a circular maze to the goal character at the center.
+*   **Dynamic Circular Maze:** The maze is randomly generated using a recursive backtracking algorithm adapted for a circular grid, creating a new challenge every time.
+*   **Character Universe:** Features the combined roster of characters from **Paw Patrol** and **Gabby's Dollhouse**.
+*   **Dynamic Character Selection:** A random set of 6 characters is chosen for each game. Players can select their avatar from this set, which is displayed on the side in landscape mode.
+*   **Canvas-Based Rendering:** The maze, player, and goal are all drawn on an HTML5 canvas, allowing for a smooth and scalable visual experience.
+*   **Difficulty Levels:** Players can choose from Easy (6 levels), Medium (9 levels), and Hard (12 levels).
+*   **Controls:** Supports keyboard arrow keys for radial and tangential movement, as well as intuitive swipe gestures on touchscreens.
+*   **Winning Modal:** A modal appears when the player reaches the center, celebrating the win with the characters from that round.
+
+### Classic Maze Adventure
+
+*   **Objective:** Navigate a character through a randomly generated rectangular maze to find a goal character.
+*   **Character Universe:** The game features a combined roster of characters from both **Paw Patrol** and **Gabby's Dollhouse**.
+*   **Dynamic Character Selection:** For each new game, a random set of 6 characters is selected from the combined universe and displayed in a 3x2 grid, allowing the player to choose their avatar. The player icon now correctly updates mid-game when a new character is selected.
+*   **Winning Modal:** The congratulatory modal now correctly displays only the two relevant characters: the player character and the goal character.
+*   **Core Gameplay Features:**
+    *   **Random Maze Generation:** Mazes are generated using a recursive backtracking algorithm.
+    *   **Difficulty Levels:** Easy (8x8), Medium (12x12), and Hard (16x16) options are available.
+    *   **Controls:** Supports both keyboard arrow keys and touchscreen path tracing.
+
 ### Paw Patrol Maze Adventure
 
-*   **Objective:** Fix the player character display, add a missing character, and enhance the winning message.
-*   **Player Character Display:** The player's avatar in the maze should correctly display the selected character.
-*   **Winning Modal:**
-    *   The winning message will be updated to dynamically display which character saved the lost pup (e.g., "Chase found and saved Skye").
-*   **Missing Character:** Add the missing "Rubble" character to the character selection and the game.
-
-#### Core Gameplay
-
-*   **Random Maze Generation:** Mazes are generated using a recursive backtracking algorithm, ensuring a new experience every time.
-*   **Difficulty Levels:** Users can choose from three difficulty levels: Easy (8x8), Medium (12x12), and Hard (16x16).
-*   **Character Selection:** In landscape mode, players can select their character from a list of Paw Patrol pups.
-*   **Random Goal Character:** The character at the end of the maze is randomly selected from the available characters, ensuring a surprise ending.
-*   **Static Entry & Dynamic Exit:** The maze's starting point is permanently set to the middle of the left edge, while the exit character on the right is randomized.
-*   **Controls:** 
-    *   **Keyboard:** Players can use the arrow keys for precise, one-square-at-a-time movement.
-    *   **Touchscreen:** Players can trace a path with their finger in real-time.
-
-#### Visual & Interactive Features
-
-*   **Paw Patrol Theme:** The game features Paw Patrol characters (Chase, Rubble, Skye, Marshall, Zuma) to create an engaging experience for kids. All character images are stored locally for fast, reliable loading.
-*   **Character Selection UI:** In landscape mode, a vertical panel on the left displays the available characters. The selected character is highlighted.
-*   **Larger Images:** Character images in the selection panel, the goal area, and the winning modal have been enlarged by 50% for better visibility.
-*   **Visual Cues:** The starting cell is colored light green, and the ending cell is colored light blue, making them instantly recognizable.
-*   **Rainbow Path Tracing:** The player's path is traced with a vibrant, multi-colored rainbow effect.
-*   **Dynamic Layout:** The application layout dynamically adjusts to the true visible area of the browser window.
-*   **Congratulations Modal:** A celebratory modal with all the Paw Patrol characters appears when the maze is solved.
+*   **Objective:** Navigate a Paw Patrol pup through a maze to rescue another pup.
+*   **Character Selection:** In landscape mode, players can select their character from a complete list of Paw Patrol pups.
+*   **Random Goal Character:** The character to be rescued is randomly selected.
 
 ### Paw Patrol Pattern Game
 
-#### Core Gameplay
-
-*   **Pattern Matching:** The game presents a sequence of Paw Patrol characters, and the player must complete the pattern.
-*   **Selectable Pattern Length:** Users can select a pattern length of 2, 3, or 4 characters via on-screen buttons.
-*   **Random Pattern Display:** The selected pattern is repeated randomly between two and three times. The user is then prompted to add the next characters in the sequence.
-*   **Interactive Pattern Completion:** The user can drag and drop characters into empty slots to complete the pattern.
-*   **Visual Feedback:** Correctly placed characters are visually confirmed.
-
-#### Winning Display
-
-*   **Large, Rainbow Text:** Upon successful completion, a large, rainbow-colored "Congratulations!" message is displayed below the game board.
-*   **Pattern Characters Displayed:** The message includes the images of the characters that formed the winning pattern.
-*   **Not a Modal:** The winning display is part of the main page flow, not an overlay, allowing the user to see both the completed pattern and the congratulatory message.
+*   **Objective:** Complete a repeating pattern of Paw Patrol characters.
+*   **Pattern Length:** Players can choose a pattern length of 2, 3, or 4 characters.
+*   **Drag-and-Drop:** Players complete the sequence by dragging and dropping the correct character into place.
 
 ## File Structure
 
 *   `index.html`: The main landing page.
 *   `style.css`: The stylesheet for the `index.html` page.
-*   `maze_image_test.html`: The main file for the maze game.
+*   `maze_circle.html`: The main file for the **Circle Maze Adventure**.
+*   `maze_rectangle.html`: The main file for the **Classic Maze Adventure**.
+*   `paw_patrol_maze.html`: The main file for the **Paw Patrol Maze Adventure**.
 *   `pattern.html`: The main file for the pattern game.
-*   `pattern.css`: The stylesheet for the pattern game.
 *   `pattern.js`: The JavaScript logic for the pattern game.
+*   `pattern.css`: The stylesheet for the pattern game.
 
-## Recent Changes
+## Current Task: Bug Fixes
 
-*   **Fix: Skye Image Path:** Corrected the file path for the character "Skye" from `sky.jpg` to `skye.jpg` in `maze_image_test.html` and `pattern.js` to resolve loading issues and ensure the image displays correctly in both the maze and pattern games.
+*   **Goal:** Address several bugs in the maze games to improve functionality and user experience.
+*   **Changes Implemented:**
+    *   **Circle Maze Fix:** Corrected a critical rendering bug in `maze_circle.html`. The maze was failing to draw because the canvas context was not correctly retrieving CSS variable colors. The code was updated to use `getComputedStyle` to ensure the maze renders correctly.
+    *   **Classic Maze Fix 1 (Player Icon):** In `maze_rectangle.html`, the logic was fixed to ensure the player's icon in the maze updates instantly when a new character is selected from the side panel without requiring a full game reset.
+    *   **Classic Maze Fix 2 (Win Modal):** The winning modal in `maze_rectangle.html` was modified to display only the player's character and the goal character, providing a more focused and relevant win screen.
+    *   **Blueprint Process Correction:** Updated the blueprint to add new tasks without deleting the history of previous tasks.
+
+## Previous Task: Create Circle Maze
+
+*   **Goal:** Create a new maze game with a circular layout, incorporating the advanced features from the other mazes.
+*   **Changes Implemented:**
+    *   Developed a new maze generation algorithm for a circular grid.
+    *   Rendered the maze, player, and goal on an HTML5 canvas.
+    *   Integrated the combined Paw Patrol and Gabby's Dollhouse character set with a 6-character random selection screen.
+    *   Implemented controls for both keyboard (arrow keys) and touch (swipe gestures).
+    *   Added the new game to the project blueprint.

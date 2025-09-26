@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Paw Patrol Maze Adventure - Image Test</title>
+    <title>Paw Patrol Maze</title>
     <style>
         :root {
             --wall-color: #333;
@@ -150,7 +150,7 @@
     </style>
 </head>
 <body>
-    <h1>Paw Patrol Maze Adventure - Image Test</h1>
+    <h1>Paw Patrol Maze Adventure</h1>
     <div id="main-content">
         <div id="dropdown-controls">
             <div class="dropdown">
@@ -194,12 +194,14 @@
         const dropdownContent = document.getElementById('dropdown-content');
         const characters = [
             { name: 'Chase', image: 'images/chase.jpg' },
+            { name: 'Everest', image: 'images/everest.jpg' },
             { name: 'Marshall', image: 'images/marshall.jpg' },
+            { name: 'Rubble', image: 'images/rubble.jpg' },
+            { name: 'Ryder', image: 'images/ryder.jpg' },
             { name: 'Skye', image: 'images/skye.jpg' },
-            { name: 'Zuma', image: 'images/zuma.jpg' },
-            { name: 'Rubble', image: 'images/rubble.jpg'}
+            { name: 'Zuma', image: 'images/zuma.jpg' }
         ];
-        let selectedCharacter = characters[0];
+        let selectedCharacter = characters[Math.floor(Math.random() * characters.length)];
         let goalCharacter;
         let maze, player, currentDifficulty = 8, playerPos, goalPos, visited, isMoving = false;
 

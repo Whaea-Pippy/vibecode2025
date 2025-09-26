@@ -1,0 +1,107 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f8ff;
+}
+
+#game-board {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#pattern-container, #user-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.pattern-cell {
+    height: 100px;
+    border: 2px solid #ccc;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-input-cell {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #ccc;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pattern-cell img, .user-input-cell img {
+    height: 100%;
+    width: auto;
+}
+
+.user-input-cell.correct {
+    background-color: #90ee90;
+}
+
+#character-selection-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 400px;
+    justify-content: center;
+}
+
+.character-image {
+    width: 80px;
+    height: 80px;
+    margin: 5px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    border-radius: 5px;
+}
+
+.character-image.selected-char {
+    border: 3px solid #007bff;
+    box-shadow: 0 0 10px #007bff;
+}
+
+#difficulty-container {
+    margin-bottom: 20px;
+}
+
+#difficulty-container button {
+    font-size: 1.2em;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+#congratulations-container {
+    text-align: center;
+}
+
+.rainbow-text {
+    font-size: 3em;
+    font-weight: bold;
+    background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#congratulations-images {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.congratulations-image {
+    width: 80px;
+    height: 80px;
+    margin: 5px;
+}
