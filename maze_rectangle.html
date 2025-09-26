@@ -239,7 +239,6 @@
                     if(player) player.src = selectedCharacter.image;
                     document.querySelectorAll('.character-btn').forEach(btn => btn.classList.remove('selected'));
                     img.classList.add('selected');
-                    startGame(currentDifficulty, false); // Don't reset characters when just changing selection
                 });
                 selectionContainer.appendChild(img);
             });
@@ -330,11 +329,10 @@
                 if (!selectedCharacter || !displayCharacters.find(c => c.name === selectedCharacter.name)) {
                     selectedCharacter = displayCharacters[0];
                 }
+                const availableGoalCharacters = displayCharacters.filter(c => c.name !== selectedCharacter.name);
+                goalCharacter = availableGoalCharacters.length > 0 ? availableGoalCharacters[Math.floor(Math.random() * availableGoalCharacters.length)] : displayCharacters[1];
                 createCharacterSelection();
             }
-            
-            const availableGoalCharacters = displayCharacters.filter(c => c.name !== selectedCharacter.name);
-            goalCharacter = availableGoalCharacters.length > 0 ? availableGoalCharacters[Math.floor(Math.random() * availableGoalCharacters.length)] : displayCharacters[1];
             
             const goalCharacterImg = document.getElementById('goal-character');
             goalCharacterImg.src = goalCharacter.image;

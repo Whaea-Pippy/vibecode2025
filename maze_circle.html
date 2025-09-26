@@ -363,7 +363,7 @@
                     playerImage.src = selectedCharacter.image;
                     document.querySelectorAll('.character-btn').forEach(btn => btn.classList.remove('selected'));
                     img.classList.add('selected');
-                    startGame(currentDifficulty, false);
+                    drawMaze();
                 });
                 selectionContainer.appendChild(img);
             });
@@ -392,10 +392,9 @@
                 if (!selectedCharacter || !displayCharacters.find(c => c.name === selectedCharacter.name)) {
                     selectedCharacter = displayCharacters[0];
                 }
+                const availableGoalCharacters = displayCharacters.filter(c => c.name !== selectedCharacter.name);
+                goalCharacter = availableGoalCharacters.length > 0 ? availableGoalCharacters[Math.floor(Math.random() * availableGoalCharacters.length)] : displayCharacters[1];
             }
-            
-            const availableGoalCharacters = displayCharacters.filter(c => c.name !== selectedCharacter.name);
-            goalCharacter = availableGoalCharacters.length > 0 ? availableGoalCharacters[Math.floor(Math.random() * availableGoalCharacters.length)] : displayCharacters[1];
             
             playerImage.src = selectedCharacter.image;
             goalImage.src = goalCharacter.image;
@@ -436,11 +435,16 @@
             let moved = false;
             
             if (dr === -1 && !cell.walls.inward) { // Inward
-                const segmentsIn = maze.segmentsPerLevel[r-1];
-                const segmentsOut = maze.segmentsPerLevel[r];
-                playerPos.r--;
-                playerPos.c = Math.floor(c * (segmentsIn/segmentsOut));
-                moved = true;
+                if (r > 0) {
+                    const segmentsIn = maze.segmentsPerLevel[r-1];
+                    const segmentsOut = maze.segmentsPerLevel[r];
+                    playerPos.r--;
+                    playerPos.c = Math.floor(c * (segmentsIn/segmentsOut));
+                    moved = true;
+                } else if (r === 0) {
+                    playerPos.r = -1; // Reached the center
+                    moved = true;
+                }
             } else if (dr === 1 && !cell.walls.outward) { // Outward
                 if (r < currentDifficulty - 1) {
                     const segmentsIn = maze.segmentsPerLevel[r];
@@ -459,7 +463,7 @@
 
             if (moved) {
                 drawMaze();
-                if (playerPos.r === 0) {
+                if (playerPos.r === -1) {
                      setTimeout(showWinModal, 200);
                 }
             }

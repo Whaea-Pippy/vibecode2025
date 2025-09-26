@@ -40,6 +40,33 @@ This document outlines the design and features of a collection of kids' arcade g
 *   **Pattern Length:** Players can choose a pattern length of 2, 3, or 4 characters.
 *   **Drag-and-Drop:** Players complete the sequence by dragging and dropping the correct character into place.
 
+## Next Task: New Counting Game
+
+*   **Title:** How Many Are Ready to Play?
+*   **Objective:** Count the number of characters displayed and select the correct number.
+*   **Gameplay:**
+    *   Display a random number of character images (from 1 to 6).
+    *   Display numbers 1 through 6 for the user to choose from.
+    *   On correct selection, show a "Congrats" message: "YES - THERE ARE [NUMBER] READY TO PLAY!".
+
+## Known Issues
+
+### Classic Maze Adventure
+*   If the user changes the character mid-game, the character does not display at all.
+*   The character at the end of the maze should not change. The game is to choose who is going to save the "lost" one.
+
+### Cirlce Maze
+*   Images are too small.
+*   The maze layout is confusing.
+*   Arrows allow the character to move through maze walls.
+*   Touch screen trace functionality does not work at all.
+
+### Paw Patrol Maze
+*   This maze needs the same fixes that the Classic Maze needs.
+
+### Pattern Games (Both)
+*   The touch screen drag-and-drop functionality has never worked and still does not.
+
 ## File Structure
 
 *   `index.html`: The main landing page.
