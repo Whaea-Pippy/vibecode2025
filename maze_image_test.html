@@ -1,0 +1,401 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Paw Patrol Maze Adventure - Image Test</title>
+    <style>
+        :root {
+            --wall-color: #333;
+            --background-color: #f7f9fc;
+            --header-color: #007a87;
+            --button-bg: #007a87;
+            --button-hover-bg: #005f6b;
+            --maze-bg: #ffffff;
+            --start-color: #a7f3d0;
+            --goal-color: #bfdbfe;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 8px;
+            touch-action: none;
+            color: #333;
+            width: 100%;
+            height: 100dvh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        h1 {
+            color: var(--header-color);
+            text-align: center;
+            margin: 5px 0;
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+        #main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            flex: 1;
+            overflow: hidden;
+        }
+        #game-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            height: 100%;
+            flex: 1;
+            overflow: hidden;
+        }
+        #character-selection {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-right: 15px;
+        }
+        .character-btn {
+            width: clamp(60px, 15vw, 120px);
+            height: clamp(60px, 15vw, 120px);
+            object-fit: cover;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .character-btn.selected {
+            border-color: var(--header-color);
+        }
+        .side-character {
+            width: clamp(60px, 15vw, 120px);
+            height: clamp(60px, 15vw, 120px);
+            object-fit: contain;
+            flex-shrink: 0;
+            border-radius: 50%;
+        }
+        #game-container {
+            display: grid;
+            background-color: var(--maze-bg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            touch-action: none;
+            position: relative;
+            border: 2px solid var(--wall-color);
+            aspect-ratio: 1 / 1;
+            max-height: 100%;
+            max-width: 100%;
+        }
+        #instruction-text {
+            margin: 8px 0 5px;
+            font-size: 0.9em;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .cell { position: relative; box-sizing: border-box; }
+        .start-cell { background-color: var(--start-color); }
+        .goal-cell { background-color: var(--goal-color); }
+        .wall-top { border-top: 1px solid var(--wall-color); }
+        .wall-right { border-right: 1px solid var(--wall-color); }
+        .wall-bottom { border-bottom: 1px solid var(--wall-color); }
+        .wall-left { border-left: 1px solid var(--wall-color); }
+        
+        #player {
+            position: absolute;
+            transition: transform 0.05s linear;
+            z-index: 10;
+            object-fit: contain; 
+        }
+        #win-modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fff; padding: 20px; width: 85%; max-width: 500px; text-align: center; border-radius: 10px; animation: modal-appear 0.3s ease; }
+        .paw-patrol-images { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+        .paw-patrol-images img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        @keyframes modal-appear { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .control-button { padding: 8px 12px; font-size: 14px; cursor: pointer; border-radius: 5px; border: none; background-color: var(--button-bg); color: white; transition: background-color 0.2s; width: 100%; box-sizing: border-box; }
+        .control-button:hover, .control-button.active { background-color: var(--button-hover-bg); }
+        #dropdown-controls { margin-bottom: 5px; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background-color: #f1f1f1; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 101; border-radius: 5px; overflow: hidden; }
+        .dropdown-content.show { display: block; }
+        .dropdown-content .control-button { background-color: #f1f1f1; color: black; text-align: left; }
+        .dropdown-content .control-button:hover { background-color: #ddd; }
+        .dropdown-content .control-button.active { background-color: var(--button-hover-bg); color: white; }
+        #side-controls { display: none; flex-direction: column; gap: 10px; margin-left: 15px; }
+        @media (orientation: portrait) {
+            #main-content { flex-direction: column; }
+            #game-container { width: 100%; height: auto; }
+            #side-controls { display: none; }
+            #dropdown-controls { display: block; }
+        }
+        @media (orientation: landscape) {
+            #main-content { flex-direction: row; justify-content: center; }
+            #game-area { flex: 1; }
+            #character-selection { display: flex; }
+            #game-container { width: auto; height: 100%; }
+            #dropdown-controls { display: none; }
+            #side-controls { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Paw Patrol Maze Adventure - Image Test</h1>
+    <div id="main-content">
+        <div id="dropdown-controls">
+            <div class="dropdown">
+                <button id="dropdown-btn" class="control-button">Game Controls</button>
+                <div id="dropdown-content" class="dropdown-content">
+                    <button id="easy-btn-dropdown" class="control-button">Easy (8x8)</button>
+                    <button id="medium-btn-dropdown" class="control-button">Medium (12x12)</button>
+                    <button id="hard-btn-dropdown" class="control-button">Hard (16x16)</button>
+                    <button id="reset-btn-dropdown" class="control-button">Reset Maze</button>
+                </div>
+            </div>
+        </div>
+        <div id="game-area">
+            <div id="character-selection"></div>
+            <div id="game-container"></div>
+            <img id="goal-character" src="images/skye.jpg" alt="Skye End" class="side-character">
+        </div>
+        <div id="side-controls">
+            <button id="easy-btn-side" class="control-button">Easy (8x8)</button>
+            <button id="medium-btn-side" class="control-button">Medium (12x12)</button>
+            <button id="hard-btn-side" class="control-button">Hard (16x16)</button>
+            <button id="reset-btn-side" class="control-button">Reset Maze</button>
+        </div>
+    </div>
+    <p id="instruction-text">Guide your pup to the goal to get the treat!</p>
+    <div id="win-modal">
+        <div class="modal-content">
+            <h2 id="win-message">You united the pups!</h2>
+            <div class="paw-patrol-images">
+                 
+            </div>
+            <button id="play-again-btn" class="control-button">Play Again</button>
+        </div>
+    </div>
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const winModal = document.getElementById('win-modal');
+        const winMessage = document.getElementById('win-message');
+        const pawPatrolImagesContainer = document.querySelector('.paw-patrol-images');
+        const dropdownBtn = document.getElementById('dropdown-btn');
+        const dropdownContent = document.getElementById('dropdown-content');
+        const characters = [
+            { name: 'Chase', image: 'images/chase.jpg' },
+            { name: 'Marshall', image: 'images/marshall.jpg' },
+            { name: 'Skye', image: 'images/skye.jpg' },
+            { name: 'Zuma', image: 'images/zuma.jpg' },
+            { name: 'Rubble', image: 'images/rubble.jpg'}
+        ];
+        let selectedCharacter = characters[0];
+        let goalCharacter;
+        let maze, player, currentDifficulty = 8, playerPos, goalPos, visited, isMoving = false;
+
+        function createCharacterSelection() {
+            const selectionContainer = document.getElementById('character-selection');
+            selectionContainer.innerHTML = '';
+            characters.forEach(character => {
+                const img = document.createElement('img');
+                img.src = character.image;
+                img.alt = `Select ${character.name}`;
+                img.classList.add('character-btn');
+                if (character.name === selectedCharacter.name) {
+                    img.classList.add('selected');
+                }
+                img.addEventListener('click', () => {
+                    selectedCharacter = character;
+                    document.querySelectorAll('.character-btn').forEach(btn => btn.classList.remove('selected'));
+                    img.classList.add('selected');
+                    if(player) player.src = selectedCharacter.image;
+                    startGame(currentDifficulty);
+                });
+                selectionContainer.appendChild(img);
+            });
+        }
+        function generateMaze(cols, rows) {
+            const grid = Array.from({ length: rows }, (_, r) => Array.from({ length: cols }, (_, c) => ({ c, r, visited: false, walls: { top: true, right: true, bottom: true, left: true } })));
+            const stack = [];
+            let current = grid[Math.floor(rows / 2)][0];
+            current.visited = true;
+            do {
+                const neighbors = [grid[current.r-1]?.[current.c], grid[current.r][current.c+1], grid[current.r+1]?.[current.c], grid[current.r][current.c-1]].filter(n => n && !n.visited);
+                if (neighbors.length > 0) {
+                    stack.push(current);
+                    const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    if (next.r < current.r) { current.walls.top = false; next.walls.bottom = false; }
+                    else if (next.c > current.c) { current.walls.right = false; next.walls.left = false; }
+                    else if (next.r > current.r) { current.walls.bottom = false; next.walls.top = false; }
+                    else if (next.c < current.c) { current.walls.left = false; next.walls.right = false; }
+                    current = next;
+                    current.visited = true;
+                } else if (stack.length > 0) { current = stack.pop(); }
+            } while (stack.length > 0);
+            return grid;
+        }
+        function drawMaze() {
+            gameContainer.style.gridTemplateColumns = `repeat(${currentDifficulty}, 1fr)`;
+            gameContainer.innerHTML = '';
+            maze.flat().forEach(cellData => {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                if (cellData.walls.top) cell.classList.add('wall-top');
+                if (cellData.walls.right) cell.classList.add('wall-right');
+                if (cellData.walls.bottom) cell.classList.add('wall-bottom');
+                if (cellData.walls.left) cell.classList.add('wall-left');
+                gameContainer.appendChild(cell);
+            });
+            const startCellIndex = playerPos.y * currentDifficulty + playerPos.x;
+            const goalCellIndex = goalPos.y * currentDifficulty + goalPos.x;
+            gameContainer.children[startCellIndex].classList.add('start-cell');
+            gameContainer.children[goalCellIndex].classList.add('goal-cell');
+            
+            if(!player) {
+                player = document.createElement('img');
+                player.id = 'player';
+                gameContainer.append(player);
+            }
+            player.src = selectedCharacter.image;
+            requestAnimationFrame(resizeAndPositionElements);
+        }
+        function resizeAndPositionElements() {
+            if (!gameContainer.firstChild) return;
+            const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+            const containerSize = isLandscape ? gameContainer.getBoundingClientRect().height : gameContainer.getBoundingClientRect().width;
+            const cellSize = containerSize / currentDifficulty;
+            const playerSize = cellSize * 0.8;
+            if (player) {
+                player.style.width = `${playerSize}px`;
+                player.style.height = `${playerSize}px`;
+                player.style.transform = `translate(${playerPos.x * cellSize + (cellSize - playerSize) / 2}px, ${playerPos.y * cellSize + (cellSize - playerSize) / 2}px)`;
+            }
+            updateTrace();
+        }
+        function updateTrace() {
+            visited.forEach((pos, i) => {
+                const index = pos.y * currentDifficulty + pos.x;
+                const cell = gameContainer.children[index];
+                if(cell && !cell.classList.contains('goal-cell') && !cell.classList.contains('start-cell')) {
+                    const hue = (i * 20) % 360;
+                    cell.style.backgroundColor = `hsl(${hue}, 90%, 70%)`;
+                }
+            });
+        }
+        function startGame(size) {
+            currentDifficulty = size;
+            document.querySelectorAll('.control-button.active').forEach(btn => btn.classList.remove('active'));
+            const difficulty = size === 8 ? 'easy' : size === 12 ? 'medium' : 'hard';
+            document.getElementById(`${difficulty}-btn-dropdown`).classList.add('active');
+            document.getElementById(`${difficulty}-btn-side`).classList.add('active');
+            
+            const availableGoalCharacters = characters.filter(c => c.name !== selectedCharacter.name);
+            goalCharacter = availableGoalCharacters[Math.floor(Math.random() * availableGoalCharacters.length)];
+            const goalCharacterImg = document.getElementById('goal-character');
+            goalCharacterImg.src = goalCharacter.image;
+            goalCharacterImg.alt = `${goalCharacter.name} End`;
+            
+            maze = generateMaze(size, size);
+            playerPos = { x: 0, y: Math.floor(size / 2) };
+            goalPos = { x: size - 1, y: Math.floor(size / 2) };
+            maze[playerPos.y][0].walls.left = false;
+            maze[goalPos.y][size - 1].walls.right = false;
+            visited = [{...playerPos}];
+            drawMaze();
+        }
+        function showWinModal() {
+            winMessage.textContent = `${selectedCharacter.name} found and saved ${goalCharacter.name}!`;
+            pawPatrolImagesContainer.innerHTML = '';
+            characters.forEach(character => {
+                const img = document.createElement('img');
+                img.src = character.image;
+                img.alt = character.name;
+                pawPatrolImagesContainer.appendChild(img);
+            });
+            winModal.style.display = 'flex';
+        }
+        function moveTo(x, y) {
+            if(isMoving) return;
+            const dx = x - playerPos.x;
+            const dy = y - playerPos.y;
+            if (Math.abs(dx) + Math.abs(dy) !== 1) return;
+            const currentCell = maze[playerPos.y][playerPos.x];
+            let moved = false;
+            if (dy === -1 && !currentCell.walls.top) { playerPos.y--; moved = true; }
+            else if (dx === 1 && !currentCell.walls.right) { playerPos.x++; moved = true; }
+            else if (dy === 1 && !currentCell.walls.bottom) { playerPos.y++; moved = true; }
+            else if (dx === -1 && !currentCell.walls.left) { playerPos.x--; moved = true; }
+            if (moved) {
+                isMoving = true;
+                if (!visited.some(p => p.x === playerPos.x && p.y === playerPos.y)) {
+                    visited.push({ ...playerPos });
+                }
+                resizeAndPositionElements();
+                if (playerPos.x === goalPos.x && playerPos.y === goalPos.y) {
+                    setTimeout(showWinModal, 200);
+                }
+                setTimeout(() => isMoving = false, 50);
+            }
+        }
+        dropdownBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            dropdownContent.classList.toggle('show');
+        });
+        window.addEventListener('click', (event) => {
+            if (!event.target.matches('#dropdown-btn')) {
+                if (dropdownContent.classList.contains('show')) {
+                    dropdownContent.classList.remove('show');
+                }
+            }
+        });
+        function handleControlClick(callback) {
+            callback();
+            if (dropdownContent.classList.contains('show')) {
+                dropdownContent.classList.remove('show');
+            }
+        }
+        ['easy', 'medium', 'hard'].forEach((difficulty, i) => {
+            const size = [8, 12, 16][i];
+            document.getElementById(`${difficulty}-btn-dropdown`).addEventListener('click', () => handleControlClick(() => startGame(size)));
+            document.getElementById(`${difficulty}-btn-side`).addEventListener('click', () => startGame(size));
+        });
+        document.getElementById('reset-btn-dropdown').addEventListener('click', () => handleControlClick(() => startGame(currentDifficulty)));
+        document.getElementById('reset-btn-side').addEventListener('click', () => startGame(currentDifficulty));
+        document.getElementById('play-again-btn').addEventListener('click', () => { winModal.style.display = 'none'; startGame(currentDifficulty); });
+        window.addEventListener('resize', resizeAndPositionElements);
+        window.addEventListener('keydown', e => {
+            const keyMap = { ArrowUp: [0,-1], ArrowDown: [0,1], ArrowLeft: [-1,0], ArrowRight: [1,0] };
+            if (keyMap[e.key]) {
+                const newX = playerPos.x + keyMap[e.key][0];
+                const newY = playerPos.y + keyMap[e.key][1];
+                moveTo(newX, newY);
+            }
+        });
+        gameContainer.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const mazeRect = gameContainer.getBoundingClientRect();
+            const cellSize = mazeRect.width / currentDifficulty;
+            const x = Math.floor((touch.clientX - mazeRect.left) / cellSize);
+            const y = Math.floor((touch.clientY - mazeRect.top) / cellSize);
+            if (x >= 0 && x < currentDifficulty && y >= 0 && y < currentDifficulty) {
+                moveTo(x, y);
+            }
+        }, { passive: false });
+        gameContainer.addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
+        
+        createCharacterSelection();
+        startGame(currentDifficulty);
+    </script>
+</body>
+</html>

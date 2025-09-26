@@ -1,0 +1,15 @@
+{
+  "name": "paw-patrol-maze-game",
+  "version": "1.0.0",
+  "description": "A Paw Patrol maze game.",
+  "main": "maze_rectangle.html",
+  "scripts": {
+    "start": "http-server -p 8080 -c-1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}

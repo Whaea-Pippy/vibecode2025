@@ -14,8 +14,9 @@
             --button-bg: #007a87;
             --button-hover-bg: #005f6b;
             --maze-bg: #ffffff;
+            --start-color: #a7f3d0;
+            --goal-color: #bfdbfe;
         }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
@@ -23,29 +24,81 @@
             align-items: center;
             background-color: var(--background-color);
             margin: 0;
-            padding: 8px; /* Reduced padding */
+            padding: 8px;
             touch-action: none;
             color: #333;
             width: 100%;
-            height: 100dvh; /* Use DYNAMIC viewport height to account for browser bars */
+            height: 100dvh;
             box-sizing: border-box;
+            overflow: hidden;
         }
-
         h1 {
             color: var(--header-color);
             text-align: center;
-            margin: 5px 0; /* Reduced margin */
-            font-size: 1.5em; /* Reduced font size */
+            margin: 5px 0;
+            font-size: 1.5em;
             flex-shrink: 0;
         }
-        #controls {
-            margin-bottom: 5px; /* Reduced margin */
+        #main-content {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px; /* Reduced gap */
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            flex: 1;
+            overflow: hidden;
+        }
+        #game-area {
+            display: flex;
+            align-items: center;
             justify-content: center;
+            gap: 15px;
+            width: 100%;
+            height: 100%;
+            flex: 1;
+            overflow: hidden;
+        }
+        .side-character {
+            width: clamp(40px, 10vw, 60px);
+            height: clamp(40px, 10vw, 60px);
+            object-fit: contain;
             flex-shrink: 0;
         }
+        #game-container {
+            display: grid;
+            background-color: var(--maze-bg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            touch-action: none;
+            position: relative;
+            border: 2px solid var(--wall-color);
+            aspect-ratio: 1 / 1;
+            max-height: 100%;
+            max-width: 100%;
+        }
+        #instruction-text {
+            margin: 8px 0 5px;
+            font-size: 0.9em;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .cell { position: relative; box-sizing: border-box; }
+        .start-cell { background-color: var(--start-color); }
+        .goal-cell { background-color: var(--goal-color); }
+        .wall-top { border-top: 1px solid var(--wall-color); }
+        .wall-right { border-right: 1px solid var(--wall-color); }
+        .wall-bottom { border-bottom: 1px solid var(--wall-color); }
+        .wall-left { border-left: 1px solid var(--wall-color); }
+        #player {
+            position: absolute;
+            background-color: var(--player-color);
+            border-radius: 50%;
+            transition: transform 0.05s linear;
+            z-index: 10;
+        }
+        #win-modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fff; padding: 20px; width: 85%; max-width: 500px; text-align: center; border-radius: 10px; animation: modal-appear 0.3s ease; }
+        .paw-patrol-images { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+        .paw-patrol-images img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+        @keyframes modal-appear { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .control-button {
             padding: 8px 12px;
             font-size: 14px;
@@ -55,115 +108,108 @@
             background-color: var(--button-bg);
             color: white;
             transition: background-color 0.2s;
-        }
-        .control-button:hover, .control-button.active { background-color: var(--button-hover-bg); }
-
-        #game-area {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
             width: 100%;
-            flex: 1; /* Allow this to grow and fill space */
-            overflow: hidden; /* Hide any overflow */
-        }
-        
-        .side-character {
-            width: clamp(40px, 10vw, 60px); /* Smaller max size */
-            height: clamp(40px, 10vw, 60px);
-            object-fit: cover;
-            border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            flex-shrink: 0;
-        }
-
-        #game-container {
-            display: grid;
-            background-color: var(--maze-bg);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            touch-action: none;
-            position: relative;
-            border-top: 2px solid var(--wall-color);
-            border-bottom: 2px solid var(--wall-color);
-            aspect-ratio: 1 / 1;
-            height: 100%;
-            /* Adjust max-width to use dvh and account for new header size */
-            max-width: calc(100dvh - 120px); 
-        }
-        
-        #instruction-text {
-            margin: 5px 0;
-            font-size: 0.9em;
-            color: #555;
-            flex-shrink: 0;
-        }
-
-        .cell {
-            position: relative;
             box-sizing: border-box;
         }
-
-        .wall-top { border-top: 1px solid var(--wall-color); }
-        .wall-right { border-right: 1px solid var(--wall-color); }
-        .wall-bottom { border-bottom: 1px solid var(--wall-color); }
-        .wall-left { border-left: 1px solid var(--wall-color); }
-
-        #player {
-            position: absolute;
-            background-color: var(--player-color);
-            border-radius: 50%;
-            transition: transform 0.05s linear;
-            z-index: 10;
+        .control-button:hover, .control-button.active { background-color: var(--button-hover-bg); }
+        #dropdown-controls { margin-bottom: 5px; }
+        .dropdown {
+            position: relative;
+            display: inline-block;
         }
-        
-        #win-modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fff; padding: 20px; width: 85%; max-width: 500px; text-align: center; border-radius: 10px; animation: modal-appear 0.3s ease; }
-        .paw-patrol-images { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
-        .paw-patrol-images img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
-        @keyframes modal-appear { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
+        .dropdown-content {
+            display: none; 
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 101;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .dropdown-content.show { display: block; }
+        .dropdown-content .control-button {
+            background-color: #f1f1f1;
+            color: black;
+            text-align: left;
+        }
+        .dropdown-content .control-button:hover { background-color: #ddd; }
+        .dropdown-content .control-button.active {
+            background-color: var(--button-hover-bg);
+            color: white;
+        }
+        #side-controls {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-left: 15px;
+        }
+        @media (orientation: portrait) {
+            #main-content { flex-direction: column; }
+            #game-container { width: 100%; height: auto; }
+            #side-controls { display: none; }
+            #dropdown-controls { display: block; }
+        }
+        @media (orientation: landscape) {
+            #main-content { flex-direction: row; justify-content: center; }
+            #game-area { flex: 1; }
+            #game-container { width: auto; height: 100%; }
+            #dropdown-controls { display: none; }
+            #side-controls { display: flex; }
+        }
     </style>
 </head>
 <body>
     <h1>Paw Patrol Maze Adventure</h1>
-    <div id="controls">
-        <button id="easy-btn" class="control-button active">Easy (8x8)</button>
-        <button id="medium-btn" class="control-button">Medium (12x12)</button>
-        <button id="hard-btn" class="control-button">Hard (16x16)</button>
-        <button id="reset-btn" class="control-button">Reset Maze</button>
-    </div>
-    <div id="game-area">
-        <img src="https://static.wikia.nocookie.net/paw-patrol/images/5/59/Chase_Action_Pack_Art.png/revision/latest?cb=20210515021943" alt="Chase Start" class="side-character">
-        <div id="game-container"></div>
-        <img src="https://static.wikia.nocookie.net/paw-patrol/images/5/53/Rubble_Action_Pack_Art.png/revision/latest?cb=20210515021943" alt="Rubble End" class="side-character">
+    <div id="main-content">
+        <div id="dropdown-controls">
+            <div class="dropdown">
+                <button id="dropdown-btn" class="control-button">Game Controls</button>
+                <div id="dropdown-content" class="dropdown-content">
+                    <button id="easy-btn-dropdown" class="control-button">Easy (8x8)</button>
+                    <button id="medium-btn-dropdown" class="control-button">Medium (12x12)</button>
+                    <button id="hard-btn-dropdown" class="control-button">Hard (16x16)</button>
+                    <button id="reset-btn-dropdown" class="control-button">Reset Maze</button>
+                </div>
+            </div>
+        </div>
+        <div id="game-area">
+            <img src="https://static.wikia.nocookie.net/paw-patrol/images/2/26/Chase_Ready_Race_Rescue_Theme.png/revision/latest?cb=20191212173426" alt="Chase Start" class="side-character">
+            <div id="game-container"></div>
+            <img src="https://static.wikia.nocookie.net/paw-patrol/images/d/d4/Rubble_Mighty_Lookout_Game_Icon.png/revision/latest?cb=20210320001332" alt="Rubble End" class="side-character">
+        </div>
+        <div id="side-controls">
+            <button id="easy-btn-side" class="control-button">Easy (8x8)</button>
+            <button id="medium-btn-side" class="control-button">Medium (12x12)</button>
+            <button id="hard-btn-side" class="control-button">Hard (16x16)</button>
+            <button id="reset-btn-side" class="control-button">Reset Maze</button>
+        </div>
     </div>
     <p id="instruction-text">Guide Chase to Rubble!</p>
-
     <div id="win-modal">
         <div class="modal-content">
             <h2>You united the pups!</h2>
             <div class="paw-patrol-images">
-                <img src="https://static.wikia.nocookie.net/paw-patrol/images/e/e4/Skye_Action_Pack_Art.png/revision/latest?cb=20210515021943" alt="Skye">
-                <img src="https://static.wikia.nocookie.net/paw-patrol/images/c/c4/Marshall_Action_Pack_Art.png/revision/latest?cb=20210515021943" alt="Marshall">
-                <img src="https://static.wikia.nocookie.net/paw-patrol/images/f/fd/Zuma_Action_Pack_Art.png/revision/latest?cb=20210515021943" alt="Zuma">
+                 <img src="https://static.wikia.nocookie.net/paw-patrol/images/e/e4/Skye_Action_Pack_Art.png" alt="Skye">
+                 <img src="https://static.wikia.nocookie.net/paw-patrol/images/c/c4/Marshall_Action_Pack_Art.png" alt="Marshall">
+                 <img src="https://static.wikia.nocookie.net/paw-patrol/images/f/fd/Zuma_Action_Pack_Art.png" alt="Zuma">
             </div>
             <button id="play-again-btn" class="control-button">Play Again</button>
         </div>
     </div>
-
     <script>
         const gameContainer = document.getElementById('game-container');
-        const [easyBtn, mediumBtn, hardBtn, resetBtn, playAgainBtn] = ['easy-btn', 'medium-btn', 'hard-btn', 'reset-btn', 'play-again-btn'].map(id => document.getElementById(id));
         const winModal = document.getElementById('win-modal');
-        
+        const dropdownBtn = document.getElementById('dropdown-btn');
+        const dropdownContent = document.getElementById('dropdown-content');
+
         let maze, player, currentDifficulty = 8, playerPos, goalPos, visited, isMoving = false;
 
         function generateMaze(cols, rows) {
             const grid = Array.from({ length: rows }, (_, r) => Array.from({ length: cols }, (_, c) => ({ c, r, visited: false, walls: { top: true, right: true, bottom: true, left: true } })));
             const stack = [];
-            let current = grid[Math.floor(Math.random() * rows)][0];
+            let current = grid[Math.floor(rows / 2)][0];
             current.visited = true;
-
             do {
                 const neighbors = [grid[current.r-1]?.[current.c], grid[current.r][current.c+1], grid[current.r+1]?.[current.c], grid[current.r][current.c-1]].filter(n => n && !n.visited);
                 if (neighbors.length > 0) {
@@ -182,7 +228,7 @@
 
         function drawMaze() {
             gameContainer.style.gridTemplateColumns = `repeat(${currentDifficulty}, 1fr)`;
-            gameContainer.innerHTML = ''; // Clear previous maze cells if any
+            gameContainer.innerHTML = '';
             maze.flat().forEach(cellData => {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
@@ -192,15 +238,21 @@
                 if (cellData.walls.left) cell.classList.add('wall-left');
                 gameContainer.appendChild(cell);
             });
+            const startCellIndex = playerPos.y * currentDifficulty + playerPos.x;
+            const goalCellIndex = goalPos.y * currentDifficulty + goalPos.x;
+            gameContainer.children[startCellIndex].classList.add('start-cell');
+            gameContainer.children[goalCellIndex].classList.add('goal-cell');
             player = document.createElement('div');
             player.id = 'player';
             gameContainer.append(player);
             requestAnimationFrame(resizeAndPositionElements);
         }
-        
+
         function resizeAndPositionElements() {
-            if (!gameContainer.firstChild) return; // Guard against no cells
-            const cellSize = gameContainer.firstChild.getBoundingClientRect().width;
+            if (!gameContainer.firstChild) return;
+            const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+            const containerSize = isLandscape ? gameContainer.getBoundingClientRect().height : gameContainer.getBoundingClientRect().width;
+            const cellSize = containerSize / currentDifficulty;
             const playerSize = cellSize * 0.6;
             player.style.width = `${playerSize}px`;
             player.style.height = `${playerSize}px`;
@@ -209,29 +261,30 @@
         }
 
         function updateTrace() {
-             visited.forEach((pos, i) => {
+            visited.forEach((pos, i) => {
                 const index = pos.y * currentDifficulty + pos.x;
                 const cell = gameContainer.children[index];
-                if(cell) {
+                if(cell && !cell.classList.contains('goal-cell') && !cell.classList.contains('start-cell')) {
                     const hue = (i * 20) % 360;
                     cell.style.backgroundColor = `hsl(${hue}, 90%, 70%)`;
                 }
-             });
+            });
         }
 
         function startGame(size) {
             currentDifficulty = size;
             document.querySelectorAll('.control-button.active').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(['easy','medium','hard'][size===8?0:size===12?1:2] + '-btn').classList.add('active');
+            const difficulty = size === 8 ? 'easy' : size === 12 ? 'medium' : 'hard';
+            document.getElementById(`${difficulty}-btn-dropdown`).classList.add('active');
+            document.getElementById(`${difficulty}-btn-side`).classList.add('active');
 
             maze = generateMaze(size, size);
-            playerPos = { x: 0, y: Math.floor(Math.random() * size) };
-            goalPos = { x: size - 1, y: Math.floor(Math.random() * size) };
+            playerPos = { x: 0, y: Math.floor(size / 2) };
+            goalPos = { x: size - 1, y: Math.floor(size / 2) };
             maze[playerPos.y][0].walls.left = false;
             maze[goalPos.y][size - 1].walls.right = false;
-
             visited = [{...playerPos}];
-            drawMaze(); // Always redraw the maze
+            drawMaze();
         }
 
         function moveTo(x, y) {
@@ -256,31 +309,41 @@
                 if (playerPos.x === goalPos.x && playerPos.y === goalPos.y) {
                     setTimeout(() => winModal.style.display = 'flex', 200);
                 }
-                setTimeout(() => isMoving = false, 50); 
-            }
-        }
-        
-        function handleTouchMove(event) {
-            event.preventDefault();
-            const touch = event.changedTouches[0];
-            const mazeRect = gameContainer.getBoundingClientRect();
-            const cellSize = mazeRect.width / currentDifficulty;
-            const x = Math.floor((touch.clientX - mazeRect.left) / cellSize);
-            const y = Math.floor((touch.clientY - mazeRect.top) / cellSize);
-
-            if (x >= 0 && x < currentDifficulty && y >= 0 && y < currentDifficulty) {
-                moveTo(x, y);
+                setTimeout(() => isMoving = false, 50);
             }
         }
 
+        dropdownBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            dropdownContent.classList.toggle('show');
+        });
 
-        // --- Event Listeners ---
-        [easyBtn, mediumBtn, hardBtn].forEach((btn, i) => btn.addEventListener('click', () => startGame([8,12,16][i])));
-        resetBtn.addEventListener('click', () => startGame(currentDifficulty));
-        playAgainBtn.addEventListener('click', () => { winModal.style.display = 'none'; startGame(currentDifficulty); });
-        
-        let resizeId; 
-        window.addEventListener('resize', () => { clearTimeout(resizeId); resizeId = setTimeout(resizeAndPositionElements, 100); });
+        window.addEventListener('click', (event) => {
+            if (!event.target.matches('#dropdown-btn')) {
+                if (dropdownContent.classList.contains('show')) {
+                    dropdownContent.classList.remove('show');
+                }
+            }
+        });
+
+        function handleControlClick(callback) {
+            callback();
+            if (dropdownContent.classList.contains('show')) {
+                dropdownContent.classList.remove('show');
+            }
+        }
+
+        ['easy', 'medium', 'hard'].forEach((difficulty, i) => {
+            const size = [8, 12, 16][i];
+            document.getElementById(`${difficulty}-btn-dropdown`).addEventListener('click', () => handleControlClick(() => startGame(size)));
+            document.getElementById(`${difficulty}-btn-side`).addEventListener('click', () => startGame(size));
+        });
+
+        document.getElementById('reset-btn-dropdown').addEventListener('click', () => handleControlClick(() => startGame(currentDifficulty)));
+        document.getElementById('reset-btn-side').addEventListener('click', () => startGame(currentDifficulty));
+        document.getElementById('play-again-btn').addEventListener('click', () => { winModal.style.display = 'none'; startGame(currentDifficulty); });
+
+        window.addEventListener('resize', resizeAndPositionElements);
 
         window.addEventListener('keydown', e => {
             const keyMap = { ArrowUp: [0,-1], ArrowDown: [0,1], ArrowLeft: [-1,0], ArrowRight: [1,0] };
@@ -291,7 +354,18 @@
             }
         });
 
-        gameContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+        gameContainer.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            const mazeRect = gameContainer.getBoundingClientRect();
+            const cellSize = mazeRect.width / currentDifficulty;
+            const x = Math.floor((touch.clientX - mazeRect.left) / cellSize);
+            const y = Math.floor((touch.clientY - mazeRect.top) / cellSize);
+            if (x >= 0 && x < currentDifficulty && y >= 0 && y < currentDifficulty) {
+                moveTo(x, y);
+            }
+        }, { passive: false });
+
         gameContainer.addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
 
         startGame(currentDifficulty);
