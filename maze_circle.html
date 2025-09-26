@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circular Maze Challenge</title>
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        canvas {
+            background-color: white;
+            border: 5px solid #333;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Circular Maze Challenge</h1>
+    <canvas id="mazeCanvas" width="600" height="600"></canvas>
+    <p>Use arrow keys to move. Find your way to the center!</p>
+
+    <script>
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const mazeRadius = 300;
+        const levels = 10;
+        const wallThickness = 2;
+        const pathWidth = (mazeRadius - 50) / levels;
+
+        let playerLevel = 0;
+        let playerAngle = Math.PI / 2; // Start at the top
+        const playerSize = pathWidth / 3;
+
+        // A simple, predefined maze layout
+        const mazeData = [
+            { start: 0.2, end: 0.8 },
+            { start: 0.4, end: 0.9 },
+            { start: 0.1, end: 0.5 },
+            { start: 0.6, end: 1.0 },
+            { start: 0.3, end: 0.7 },
+            { start: 0.0, end: 0.4 },
+            { start: 0.8, end: 1.0 },
+            { start: 0.2, end: 0.6 },
+            { start: 0.5, end: 0.9 },
+            { start: -1, end: -1 } // Center is always open
+        ];
+
+        function drawMaze() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            // Draw maze walls
+            for (let i = 0; i < levels; i++) {
+                const r = (i + 1) * pathWidth + 50;
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, Math.PI * 2);
+                ctx.strokeStyle = '#ccc';
+                ctx.lineWidth = wallThickness;
+                ctx.stroke();
+
+                const gap = mazeData[i];
+                if (gap.start !== -1) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r - wallThickness / 2, gap.start * Math.PI * 2, gap.end * Math.PI * 2);
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = wallThickness + 2;
+                    ctx.stroke();
+                }
+            }
+            
+            // Draw Goal
+            ctx.beginPath();
+            ctx.arc(0, 0, pathWidth/2, 0, 2*Math.PI);
+            ctx.fillStyle = 'lightgreen';
+            ctx.fill();
+
+            // Draw player
+            const playerR = (playerLevel + 0.5) * pathWidth + 50;
+            const playerX = playerR * Math.cos(playerAngle);
+            const playerY = playerR * Math.sin(playerAngle);
+            ctx.beginPath();
+            ctx.arc(playerX, playerY, playerSize, 0, Math.PI * 2);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function movePlayer(dLevel, dAngle) {
+            const newLevel = playerLevel + dLevel;
+            const newAngle = playerAngle + dAngle;
+            
+            if (newLevel < 0 || newLevel >= levels) return;
+
+            // Simplified collision detection
+            let canMove = true;
+            if (dLevel !== 0) { // Moving between levels
+                 const normAngle = (playerAngle / (2 * Math.PI)) % 1.0;
+                 const gap = mazeData[Math.min(newLevel, playerLevel)];
+                 if (normAngle > gap.start && normAngle < gap.end) {
+                     canMove = true;
+                 } else {
+                     canMove = false;
+                 }
+            }
+            
+            if (canMove) {
+                playerLevel = newLevel;
+                playerAngle = newAngle;
+                drawMaze();
+
+                if (playerLevel >= levels-1) { // Reached center
+                    setTimeout(() => {
+                        alert("You solved the maze!");
+                        playerLevel = 0;
+                        playerAngle = Math.PI/2;
+                        drawMaze();
+                    }, 100);
+                }
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            switch(e.key) {
+                case 'ArrowUp': movePlayer(1, 0); break; // Move inward
+                case 'ArrowDown': movePlayer(-1, 0); break; // Move outward
+                case 'ArrowLeft': movePlayer(0, -0.05); break; // Move counter-clockwise
+                case 'ArrowRight': movePlayer(0, 0.05); break; // Move clockwise
+            }
+        });
+
+        drawMaze();
+    </script>
+</body>
+</html>

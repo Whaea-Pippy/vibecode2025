@@ -1,1 +1,102 @@
-/* Add styles here */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --bg-color: #1a1d24;
+    --card-bg-color: #252a34;
+    --primary-color: #00aaff;
+    --text-color: #eaeaea;
+    --shadow-color: rgba(0, 170, 255, 0.3);
+    --noise-opacity: 0.03;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden; /* Hide overflowing noise pseudo-element */
+}
+
+/* Subtle noise texture for a premium feel */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: var(--noise-opacity);
+    z-index: -1;
+}
+
+#app-container {
+    background-color: var(--card-bg-color);
+    padding: 40px 50px;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 10px 30px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#app-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px var(--shadow-color);
+}
+
+h1.app-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px var(--shadow-color);
+}
+
+.game-links {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.game-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px 25px;
+    background-color: transparent;
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.game-link:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 20px var(--shadow-color);
+    transform: scale(1.05);
+}
+
+.game-link .icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+.game-link:hover .icon {
+    transform: rotate(-10deg) scale(1.1);
+}
