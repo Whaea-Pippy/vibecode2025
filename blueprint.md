@@ -15,6 +15,7 @@ The project follows a simple, clear file structure:
 -   `themes.js`: A shared ES Module that exports all character and theme data for the games.
 -   `multi_counting.html`, `multi_counting.css`, `multi_counting.js`: The files for the "Multi Counting" game.
 -   `multi_patterns.html`, `multi_patterns.css`, `multi_patterns.js`: The files for the "Multi Patterns" game.
+-   `multi_maze_circle.html`, `multi_maze_circle.css`, `multi_maze_circle.js`, `multi_maze_circle_component.js`: The files for the "Multi Maze Circle" game.
 -   `images/`: A directory containing all character and theme images.
 -   `v1_games/`: A directory containing the original, single-theme versions of the games for reference.
 
@@ -64,10 +65,28 @@ The project follows a simple, clear file structure:
         -   **Mobile:** Relies on a clear and simple click-to-select/click-to-place mechanic.
     -   **Win State:** When the three input squares are correctly filled, a "Congratulations!" message appears with confetti and shows the three characters the user correctly chose.
 
+### 5. "Multi Maze Circle" Game
+
+-   **Purpose:** A circular maze game where the user navigates a character from the outer edge to the center.
+-   **Features:**
+    -   **Web Component Architecture:** The maze is built as a reusable Web Component (`<multi-maze-circle>`), encapsulating its own logic and rendering.
+    -   **Theme & Difficulty Selection:** The user can select character themes and the number of maze layers (4, 5, or 6).
+    -   **Responsive Controls:** Supports keyboard and mouse/touch drag-and-drop.
+-   **Design:**
+    -   **Corrected Flexbox Layout:** The layout uses a robust Flexbox implementation to guarantee a "fit-to-screen" experience with no unwanted scrolling.
+    -   **Perfectly Circular Maze:** The maze container is forced into a `1:1` aspect ratio, ensuring the maze is always a perfect circle.
+
 ---
 
 ## Current Development Plan
 
-**Status:** The "Multi Patterns" game is now complete and fully functional with the new, standardized input logic. All known layout and gameplay bugs have been resolved. The project is in a stable state.
+**Status:** The "Multi Maze Circle" game is **Buggy**. The current maze generation algorithm, while functional, has several critical bugs that result in an incorrect and unfair maze layout. The visual feedback for player movement also requires refinement.
 
-**Next Steps:** Awaiting further user requests.
+**Next Steps: Bug Fixes and Refinements for "Multi Maze Circle"**
+
+The following issues will be addressed in the next development cycle:
+
+1.  **Correct Barrier Placement:** Fix a bug causing some barrier walls to "float" instead of properly connecting to both sides of a ring path, making them ineffective. All barriers must be correctly drawn.
+2.  **Ensure Single Gaps:** Fix a bug that can create multiple gaps in a single ring wall, violating the "one way through" principle for each layer. The algorithm will be corrected to generate exactly one gap (of the appropriate width) per ring wall.
+3.  **Align Final Exit Path:** Implement a new rule to improve the end-game experience. The gap leading *out* of the second-to-innermost ring (Ring 1) will be algorithmically aligned with the final exit gap *in* the innermost ring (Ring 0), creating a clear and satisfying final move to the goal.
+4.  **Smoother Player Trail:** Refactor the trail rendering logic. Instead of drawing a series of straight lines between discrete cell centers, the trail will be rendered as a smooth, curved path that more accurately follows the player's circular movement.

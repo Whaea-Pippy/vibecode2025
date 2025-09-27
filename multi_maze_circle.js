@@ -1,7 +1,7 @@
 import { mazeThemes } from './themes.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const circleMazeComponent = document.querySelector('circle-maze');
+customElements.whenDefined('multi-maze-circle').then(() => {
+    const circleMazeComponent = document.querySelector('multi-maze-circle');
     if (circleMazeComponent) {
         circleMazeComponent.setTheme(mazeThemes.everyone);
     }

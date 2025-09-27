@@ -1,8 +1,8 @@
-class CircleMaze extends HTMLElement {
+class MultiMazeCircle extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.settings = { rings: 5, innerRadiusRatio: 0.2, defaultCharacter: null };
+        this.settings = { rings: 5, innerRadiusRatio: 0.2 };
         this.gameState = { grid: [], player: { ring: 0, cell: 0 }, trail: [], isDragging: false };
         this.imageCache = new Map();
         this.resizeObserver = null;
@@ -13,16 +13,8 @@ class CircleMaze extends HTMLElement {
             <style>
                 :host { display: block; width: 100%; height: 100%; touch-action: none; }
                 canvas { display: block; width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 5px 25px rgba(0,0,0,0.15); }
-                #win-modal-container {
-                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                    background-color: rgba(0,0,0,0.7); display: flex;
-                    justify-content: center; align-items: center; z-index: 100;
-                }
-                #win-modal-content {
-                    background: white; padding: 30px 50px; border-radius: 15px;
-                    text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-                    animation: modal-appear 0.3s ease;
-                }
+                #win-modal-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 100; }
+                #win-modal-content { background: white; padding: 30px 50px; border-radius: 15px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); animation: modal-appear 0.3s ease; }
                 @keyframes modal-appear { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
             </style>
             <canvas></canvas>
@@ -31,9 +23,7 @@ class CircleMaze extends HTMLElement {
         this.ctx = this.canvas.getContext('2d');
         
         this.resizeObserver = new ResizeObserver(entries => {
-            for (let entry of entries) {
-                this.adjustCanvasSize(entry.contentRect);
-            }
+            for (let entry of entries) this.adjustCanvasSize(entry.contentRect);
         });
         this.resizeObserver.observe(this.canvas);
 
@@ -49,32 +39,25 @@ class CircleMaze extends HTMLElement {
         if (this.canvas.width !== size || this.canvas.height !== size) {
             this.canvas.width = size;
             this.canvas.height = size;
-            // Only draw if a game is in progress
-            if (this.gameState.grid.length > 0) {
-                this.drawAll();
-            }
+            if (this.gameState.grid.length > 0) this.drawAll();
         }
     }
 
     async setTheme(theme) {
         this.theme = theme;
-        this.settings.defaultCharacter = theme.characters[0];
         await this.preloadImages();
         this.setupLayerControls();
         this.setLayers(this.settings.rings);
     }
 
     preloadImages() {
-        const promises = this.theme.characters.map(char => {
-            return new Promise((resolve, reject) => {
-                if (this.imageCache.has(char.image)) return resolve();
-                const img = new Image();
-                img.src = char.image;
-                img.onload = () => { this.imageCache.set(char.image, img); resolve(); };
-                img.onerror = reject;
-            });
-        });
-        return Promise.all(promises);
+        return Promise.all(this.theme.characters.map(char => new Promise((resolve, reject) => {
+            if (this.imageCache.has(char.image)) return resolve();
+            const img = new Image();
+            img.src = char.image;
+            img.onload = () => { this.imageCache.set(char.image, img); resolve(); };
+            img.onerror = reject;
+        })));
     }
 
     setupLayerControls() {
@@ -93,15 +76,12 @@ class CircleMaze extends HTMLElement {
     }
 
     startGame() {
-        if (this.winModal) {
-            this.winModal.remove();
-            this.winModal = null;
-        }
+        if (this.winModal) this.winModal.remove();
+        this.winModal = null;
         this.gameState = { grid: [], player: { ring: 0, cell: 0 }, trail: [], isDragging: false };
         this.shuffleCharacters();
         this.generateMaze();
         this.createCharacterSelectionUI();
-        // A short delay to ensure canvas is sized before drawing
         setTimeout(() => this.drawAll(), 0);
     }
 
@@ -137,63 +117,61 @@ class CircleMaze extends HTMLElement {
 
     generateMaze() {
         const rings = this.settings.rings;
-        const grid = Array.from({ length: rings }, (_, r) =>
-            Array.from({ length: (r + 2) * 6 }, () => ({ walls: { E: true, S: true } }))
-        );
+        const gapWidth = rings === 6 ? 3 : 2;
 
-        let walls = [];
-        for (let r = 0; r < rings; r++) {
-            for (let c = 0; c < grid[r].length; c++) {
-                walls.push({ r, c, dir: 'E' });
-                if (r + 1 < rings) {
-                    walls.push({ r, c, dir: 'S' });
-                }
-            }
-        }
-        
-        for (let i = walls.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [walls[i], walls[j]] = [walls[j], walls[i]];
-        }
-        
-        const parent = new Map();
-        const find = (id) => {
-            if (!parent.has(id)) parent.set(id, id);
-            if (parent.get(id) === id) return id;
-            parent.set(id, find(parent.get(id)));
-            return parent.get(id);
-        };
-        const union = (id1, id2) => {
-            const root1 = find(id1);
-            const root2 = find(id2);
-            if (root1 !== root2) parent.set(root1, root2);
-        };
-        const cellId = (r, c) => `${r},${c}`;
+        const grid = Array.from({ length: rings }, (_, r) => {
+            const numCells = (r + 2) * 6;
+            return Array.from({ length: numCells }, () => ({ walls: { E: false, S: true } }));
+        });
 
-        for (const wall of walls) {
-            const { r, c, dir } = wall;
+        const gapPositions = [];
+        let lastGapAngle = Math.random() * 2 * Math.PI;
+
+        // --- PASS 1: Create Staggered Gaps ---
+        for (let r = 0; r < rings - 1; r++) {
             const numCells = grid[r].length;
-            let r1 = r, c1 = c, r2, c2;
-
-            if (dir === 'E') {
-                r2 = r;
-                c2 = (c + 1) % numCells;
-            } else { // dir === 'S'
-                r2 = r + 1;
-                const scale = grid[r2].length / numCells;
-                c2 = Math.floor(c * scale) + Math.floor(Math.random() * scale);
-            }
+            const minOffset = Math.PI * 2 / 3; 
+            lastGapAngle = (lastGapAngle + minOffset + (Math.random() * (Math.PI - minOffset))) % (2 * Math.PI);
             
-            if (find(cellId(r1, c1)) !== find(cellId(r2, c2))) {
-                union(cellId(r1, c1), cellId(r2, c2));
-                grid[r][c].walls[dir] = false;
+            const gapStart = Math.floor((lastGapAngle / (2 * Math.PI)) * numCells);
+            gapPositions.push(gapStart);
+
+            for (let i = 0; i < gapWidth; i++) {
+                const cellIndex = (gapStart + i) % numCells;
+                grid[r][cellIndex].walls.S = false;
             }
         }
 
+        // --- PASS 2: Place Strategic Barriers ---
+        for (let r = 1; r < rings; r++) {
+            const numCells = grid[r].length;
+            const prevNumCells = grid[r - 1].length;
+
+            const inGapStart = gapPositions[r - 1];
+            const pathStart = Math.floor(inGapStart * (numCells / prevNumCells));
+            
+            let pathEnd;
+            if (r < rings - 1) {
+                pathEnd = gapPositions[r];
+            } else {
+                // For the outermost ring, the "out" gap is the random entry point.
+                pathEnd = Math.floor(Math.random() * numCells);
+            }
+
+            let dist = Math.abs(pathEnd - pathStart);
+            if (dist > numCells / 2) dist = numCells - dist;
+            
+            const barrierPos = (pathStart + Math.floor(dist / 2)) % numCells;
+            grid[r][barrierPos].walls.E = true;
+        }
+
+        // --- Finalize Entry and Exit ---
         const entryCell = Math.floor(Math.random() * grid[rings-1].length);
-        const exitCell = Math.floor(Math.random() * grid[0].length);
-        grid[rings - 1][entryCell].isEntry = true;
-        grid[0][exitCell].isExit = true;
+        grid[rings-1][entryCell].isEntry = true;
+
+        const exitGapCell = Math.floor(Math.random() * grid[0].length);
+        grid[0][exitGapCell].walls.S = false;
+        grid[0][exitGapCell].isExit = true;
 
         this.gameState.grid = grid;
         this.gameState.player = { ring: rings - 1, cell: entryCell };
@@ -218,6 +196,7 @@ class CircleMaze extends HTMLElement {
         this.ctx.lineWidth = 2.5;
         this.ctx.lineCap = 'round';
 
+        // Draw ring lines and radial walls
         for (let r = 0; r < grid.length; r++) {
             const ringRadius = innerRadius + (r + 1) * ringWidth;
             const numCells = grid[r].length;
@@ -227,6 +206,7 @@ class CircleMaze extends HTMLElement {
                 const startAngle = c * cellAngle;
                 const endAngle = (c + 1) * cellAngle;
                 
+                // Draw radial walls (barriers)
                 if (grid[r][c].walls.E) {
                     this.ctx.beginPath();
                     this.ctx.moveTo(centerX + (ringRadius - ringWidth) * Math.cos(endAngle), centerY + (ringRadius - ringWidth) * Math.sin(endAngle));
@@ -234,33 +214,55 @@ class CircleMaze extends HTMLElement {
                     this.ctx.stroke();
                 }
                 
+                // Draw ring walls
                 if (grid[r][c].walls.S) {
-                    this.ctx.beginPath();
-                    this.ctx.arc(centerX, centerY, ringRadius, startAngle, endAngle);
-                    this.ctx.stroke();
+                     if (r < grid.length - 1) { // Only draw south walls for inner rings
+                        this.ctx.beginPath();
+                        this.ctx.arc(centerX, centerY, ringRadius, startAngle, endAngle);
+                        this.ctx.stroke();
+                    }
                 }
             }
         }
+        
+        // Draw the main outer and inner circles
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, maxRadius, 0, 2 * Math.PI);
+        this.ctx.stroke();
+        
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
+        this.ctx.stroke();
 
+
+        // Erase entry and exit points
         const outerRing = grid[grid.length - 1];
         const outerCellAngle = (2 * Math.PI) / outerRing.length;
-        for (let c = 0; c < outerRing.length; c++) {
-            if (!outerRing[c].isEntry) {
-                 this.ctx.beginPath();
-                 this.ctx.arc(centerX, centerY, maxRadius, c * outerCellAngle, (c + 1) * outerCellAngle);
-                 this.ctx.stroke();
-            }
+        const entryCellIndex = outerRing.findIndex(c => c.isEntry);
+        if(entryCellIndex !== -1) {
+            const entryStartAngle = entryCellIndex * outerCellAngle;
+            const entryEndAngle = (entryCellIndex + 1) * outerCellAngle;
+            this.eraseArc(centerX, centerY, maxRadius, entryStartAngle, entryEndAngle);
         }
-        
+
         const innerRing = grid[0];
         const innerCellAngle = (2 * Math.PI) / innerRing.length;
-        for (let c = 0; c < innerRing.length; c++) {
-            if(!innerRing[c].isExit) {
-                 this.ctx.beginPath();
-                 this.ctx.arc(centerX, centerY, innerRadius, c * innerCellAngle, (c+1) * innerCellAngle);
-                 this.ctx.stroke();
-            }
+        const exitCellIndex = innerRing.findIndex(c => c.isExit);
+         if(exitCellIndex !== -1) {
+            const exitStartAngle = exitCellIndex * innerCellAngle;
+            const exitEndAngle = (exitCellIndex + 1) * innerCellAngle;
+            this.eraseArc(centerX, centerY, innerRadius, exitStartAngle, exitEndAngle);
         }
+    }
+
+    eraseArc(x, y, radius, startAngle, endAngle) {
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'destination-out';
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, radius, startAngle, endAngle);
+        this.ctx.lineWidth = this.ctx.lineWidth + 2;
+        this.ctx.stroke();
+        this.ctx.restore();
     }
 
     drawTrail() {
@@ -334,7 +336,7 @@ class CircleMaze extends HTMLElement {
             
             this.drawAll();
             
-            if (this.gameState.player.ring === 0 && this.gameState.grid[0][this.gameState.player.cell].isExit) {
+            if (this.gameState.player.ring === -1) { 
                  this.handleWin();
             }
         }
@@ -351,7 +353,6 @@ class CircleMaze extends HTMLElement {
         this.shadowRoot.appendChild(this.winModal);
     }
 
-    // Conversion and validation utilities
     getCanvasCenter = () => ({ centerX: this.canvas.width / 2, centerY: this.canvas.height / 2 });
     getRadii = () => {
         const maxRadius = this.canvas.width / 2 * 0.95;
@@ -369,11 +370,13 @@ class CircleMaze extends HTMLElement {
         let angle = Math.atan2(dy, dx);
         if (angle < 0) angle += 2 * Math.PI;
         
-        if (dist < innerRadius) return { ring: -1, cell: -1 }; // Center goal area
+        if (dist < innerRadius) return { ring: -1, cell: -1 };
 
         let ring = Math.floor((dist - innerRadius) / ringWidth);
         ring = Math.max(0, Math.min(this.settings.rings - 1, ring));
         
+        if (!this.gameState.grid[ring]) return { ring: this.gameState.player.ring, cell: this.gameState.player.cell };
+
         const numCells = this.gameState.grid[ring].length;
         let cell = Math.floor(angle * numCells / (2 * Math.PI));
         cell = Math.max(0, Math.min(numCells - 1, cell));
@@ -395,24 +398,39 @@ class CircleMaze extends HTMLElement {
 
     isValidMove(from, to) {
         const { grid } = this.gameState;
-        if (!grid[from.ring] || (to.ring >= 0 && !grid[to.ring])) return false;
 
-        // Check for exit condition
-        if (to.ring === -1 && from.ring === 0 && grid[0][from.cell].isExit) return true;
-
-        if (from.ring === to.ring) { // Same ring
-            const numCells = grid[from.ring].length;
-            if ((to.cell === (from.cell + 1) % numCells) && !grid[from.ring][from.cell].walls.E) return true;
-            if ((from.cell === (to.cell + 1) % numCells) && !grid[from.ring][to.cell].walls.E) return true;
-        } else if (to.ring === from.ring + 1) { // Moving Outward
-             const scale = grid[to.ring].length / grid[from.ring].length;
-             if (Math.floor(to.cell / scale) === from.cell && !grid[from.ring][from.cell].walls.S) return true;
-        } else if (to.ring === from.ring - 1) { // Moving Inward
-             const scale = grid[from.ring].length / grid[to.ring].length;
-             if (Math.floor(from.cell / scale) === to.cell && !grid[to.ring][to.cell].walls.S) return true;
+        if (to.ring === -1) {
+            return from.ring === 0 && grid[0][from.cell].isExit;
         }
-        
+
+        if (!grid[from.ring] || !grid[to.ring]) return false;
+
+        if (from.ring === to.ring) {
+            const numCells = grid[from.ring].length;
+            const forwardMove = to.cell === (from.cell + 1) % numCells;
+            const backwardMove = from.cell === (to.cell + 1) % numCells;
+
+            if (forwardMove && !grid[from.ring][from.cell].walls.E) return true;
+            if (backwardMove && !grid[from.ring][to.cell].walls.E) return true;
+            
+            if ((from.cell === numCells - 1 && to.cell === 0 && !grid[from.ring][from.cell].walls.E) || 
+                (from.cell === 0 && to.cell === numCells - 1 && !grid[from.ring][to.cell].walls.E)) {
+                return true;
+            }
+        }
+
+        const isMovingIn = to.ring === from.ring - 1;
+        const isMovingOut = to.ring === from.ring + 1;
+
+        if (isMovingIn) {
+            const scale = grid[from.ring].length / grid[to.ring].length;
+            return Math.floor(from.cell / scale) === to.cell && !grid[to.ring][to.cell].walls.S;
+        } else if (isMovingOut) {
+            const scale = grid[to.ring].length / grid[from.ring].length;
+            return Math.floor(to.cell / scale) === from.cell && !grid[from.ring][from.cell].walls.S;
+        }
+
         return false;
     }
 }
-customElements.define('circle-maze', CircleMaze);
+customElements.define('multi-maze-circle', MultiMazeCircle);
