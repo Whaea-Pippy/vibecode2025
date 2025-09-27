@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Multi-Maze Adventure - Circle</title>
+    <link rel="stylesheet" href="multi_maze_circle.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="circle-maze-game" class="maze-game-container">
+        <div id="circle-maze-layout">
+            <div id="circle-character-selection"></div>
+            <circle-maze></circle-maze>
+            <div id="circle-layer-selection">
+                <button id="layers-4" class="control-button">4 Layers</button>
+                <button id="layers-5" class="control-button">5 Layers</button>
+                <button id="layers-6" class="control-button">6 Layers</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="circle_maze_component.js"></script>
+    <script type="module" src="multi_maze_circle.js"></script>
+
+</body>
+</html>

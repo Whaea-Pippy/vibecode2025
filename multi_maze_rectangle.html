@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Multi-Maze Adventure</title>
+    <link rel="stylesheet" href="multi_maze_rectangle.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Game Selection Screen -->
+    <div id="game-selection" class="app-container">
+        <h1 class="app-title">Multi-Maze Adventure</h1>
+        <p>Choose a maze to play!</p>
+
+        <div class="game-links">
+            <div id="everyone-maze-btn" class="game-link">
+                <img src="images/ryder.jpg" alt="Everyone Maze" class="game-image">
+                <div class="game-title">Everyone Maze</div>
+                <div class="play-button">Play Now</div>
+            </div>
+            <div id="paw-patrol-maze-btn" class="game-link">
+                <img src="images/chase.jpg" alt="Paw Patrol Maze" class="game-image">
+                <div class="game-title">Paw Patrol Maze</div>
+                <div class="play-button">Play Now</div>
+            </div>
+            <div id="gabby-maze-btn" class="game-link">
+                <img src="images/gabby/gabby.jpg" alt="Gabby Maze" class="game-image">
+                <div class="game-title">Gabby Maze</div>
+                <div class="play-button">Play Now</div>
+            </div>
+            <div id="zog-maze-btn" class="game-link">
+                <img src="images/ZOG/ZOG.JPG" alt="Zog Maze" class="game-image">
+                <div class="game-title">Zog Maze</div>
+                <div class="play-button">Play Now</div>
+            </div>
+        </div>
+
+        <div class="archive-link">
+            <a href="index.html">Back to Arcade</a>
+        </div>
+    </div>
+
+    <!-- Game Canvas (Initially Hidden) -->
+    <div id="game-canvas" class="hidden">
+        <div id="classic-maze-game" class="maze-game-container">
+             <h1 id="dynamic-header"></h1>
+             <div id="main-content">
+                <div id="dropdown-controls">
+                    <div class="dropdown">
+                        <button id="dropdown-btn" class="control-button">Game Controls</button>
+                        <div id="dropdown-content" class="dropdown-content">
+                            <button id="easy-btn-dropdown" class="control-button">Easy (8x8)</button>
+                            <button id="medium-btn-dropdown" class="control-button">Medium (12x12)</button>
+                            <button id="hard-btn-dropdown" class="control-button">Hard (16x16)</button>
+                            <button id="reset-btn-dropdown" class="control-button">Reset Maze</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="game-area">
+                    <div id="character-selection"></div>
+                    <div id="game-container"></div>
+                    <img id="goal-character" src="" alt="Goal" class="side-character">
+                </div>
+                <div id="side-controls">
+                    <button id="easy-btn-side" class="control-button">Easy (8x8)</button>
+                    <button id="medium-btn-side" class="control-button">Medium (12x12)</button>
+                    <button id="hard-btn-side" class="control-button">Hard (16x16)</button>
+                    <button id="reset-btn-side" class="control-button">Reset Maze</button>
+                </div>
+                <div id="win-modal">
+                    <div class="modal-content">
+                        <h2 id="win-message">You found the goal!</h2>
+                        <div class="character-images"></div>
+                        <button id="play-again-btn" class="control-button">Play Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="back-to-selection-btn" class="control-button">Back to Menu</button>
+    </div>
+    <script type="module" src="multi_maze_rectangle.js"></script>
+</body>
+</html>

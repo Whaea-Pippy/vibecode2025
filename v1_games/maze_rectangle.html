@@ -207,13 +207,17 @@
             { name: 'CatRat', image: 'images/gabby/catrat.jpg' },
             { name: 'DJ Catnip', image: 'images/gabby/djcatnip.jpg' },
             { name: 'Kitty Fairy', image: 'images/gabby/kittyfairy.jpg' },
-            { name: 'MerCat', image: 'images/gabby/mercat.jpg' }
+            { name: 'MerCat', image: 'images/gabby/mercat.jpg' },
+            { name: 'Zog', image: 'images/ZOG/ZOG.JPG' }
         ];
 
         let displayCharacters = [];
         let selectedCharacter;
         let goalCharacter;
         let maze, player, currentDifficulty = 8, playerPos, goalPos, visited, isMoving = false;
+        let keydownHandler = null;
+        let touchStartHandler = null;
+        let touchMoveHandler = null;
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -239,6 +243,7 @@
                     if(player) player.src = selectedCharacter.image;
                     document.querySelectorAll('.character-btn').forEach(btn => btn.classList.remove('selected'));
                     img.classList.add('selected');
+                    startGame(currentDifficulty, false);
                 });
                 selectionContainer.appendChild(img);
             });
@@ -285,8 +290,8 @@
             if(!player) {
                 player = document.createElement('img');
                 player.id = 'player';
-                gameContainer.append(player);
             }
+            gameContainer.append(player);
             player.src = selectedCharacter.image;
             requestAnimationFrame(resizeAndPositionElements);
         }
@@ -325,13 +330,13 @@
             
             if (resetCharacters) {
                 const shuffled = shuffleArray([...allCharacters]);
+                goalCharacter = shuffled.pop(); 
                 displayCharacters = shuffled.slice(0, 6);
+                
                 if (!selectedCharacter || !displayCharacters.find(c => c.name === selectedCharacter.name)) {
                     selectedCharacter = displayCharacters[0];
                 }
-                const availableGoalCharacters = displayCharacters.filter(c => c.name !== selectedCharacter.name);
-                goalCharacter = availableGoalCharacters.length > 0 ? availableGoalCharacters[Math.floor(Math.random() * availableGoalCharacters.length)] : displayCharacters[1];
-                createCharacterSelection();
+                 createCharacterSelection();
             }
             
             const goalCharacterImg = document.getElementById('goal-character');
@@ -345,6 +350,48 @@
             maze[goalPos.y][size - 1].walls.right = false;
             visited = [{...playerPos}];
             drawMaze();
+             if (player) {
+                player.src = selectedCharacter.image;
+            }
+
+            if (keydownHandler) {
+                window.removeEventListener('keydown', keydownHandler);
+            }
+            if (touchStartHandler) {
+                gameContainer.removeEventListener('touchstart', touchStartHandler);
+            }
+            if (touchMoveHandler) {
+                gameContainer.removeEventListener('touchmove', touchMoveHandler);
+            }
+
+            keydownHandler = e => {
+                const keyMap = { ArrowUp: [0,-1], ArrowDown: [0,1], ArrowLeft: [-1,0], ArrowRight: [1,0] };
+                if (keyMap[e.key]) {
+                    const newX = playerPos.x + keyMap[e.key][0];
+                    const newY = playerPos.y + keyMap[e.key][1];
+                    moveTo(newX, newY);
+                }
+            };
+
+            touchStartHandler = e => {
+                e.preventDefault();
+            };
+
+            touchMoveHandler = e => {
+                e.preventDefault();
+                const touch = e.changedTouches[0];
+                const mazeRect = gameContainer.getBoundingClientRect();
+                const cellSize = mazeRect.width / currentDifficulty;
+                const x = Math.floor((touch.clientX - mazeRect.left) / cellSize);
+                const y = Math.floor((touch.clientY - mazeRect.top) / cellSize);
+                if (x >= 0 && x < currentDifficulty && y >= 0 && y < currentDifficulty) {
+                    moveTo(x, y);
+                }
+            };
+
+            window.addEventListener('keydown', keydownHandler);
+            gameContainer.addEventListener('touchstart', touchStartHandler, { passive: false });
+            gameContainer.addEventListener('touchmove', touchMoveHandler, { passive: false });
         }
 
         function showWinModal() {
@@ -419,28 +466,6 @@
         document.getElementById('play-again-btn').addEventListener('click', () => { winModal.style.display = 'none'; startGame(currentDifficulty); });
 
         window.addEventListener('resize', resizeAndPositionElements);
-
-        window.addEventListener('keydown', e => {
-            const keyMap = { ArrowUp: [0,-1], ArrowDown: [0,1], ArrowLeft: [-1,0], ArrowRight: [1,0] };
-            if (keyMap[e.key]) {
-                const newX = playerPos.x + keyMap[e.key][0];
-                const newY = playerPos.y + keyMap[e.key][1];
-                moveTo(newX, newY);
-            }
-        });
-
-        gameContainer.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const touch = e.changedTouches[0];
-            const mazeRect = gameContainer.getBoundingClientRect();
-            const cellSize = mazeRect.width / currentDifficulty;
-            const x = Math.floor((touch.clientX - mazeRect.left) / cellSize);
-            const y = Math.floor((touch.clientY - mazeRect.top) / cellSize);
-            if (x >= 0 && x < currentDifficulty && y >= 0 && y < currentDifficulty) {
-                moveTo(x, y);
-            }
-        }, { passive: false });
-        gameContainer.addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
         
         startGame(currentDifficulty);
     </script>

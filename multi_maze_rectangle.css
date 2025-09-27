@@ -1,0 +1,315 @@
+/* MAZE-SPECIFIC STYLES */
+:root {
+    --wall-color: #333;
+    --background-color: #f7f9fc;
+    --header-color: #007a87;
+    --button-bg: #007a87;
+    --button-hover-bg: #005f6b;
+    --maze-bg: #ffffff;
+    --start-color: #a7f3d0;
+    --goal-color: #bfdbfe;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+    margin: 0;
+    color: #333;
+    width: 100%;
+    height: 100dvh;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Allow vertical scroll, prevent horizontal */
+    touch-action: none;
+}
+
+/* --- MENU STYLES (from style.css) --- */
+.app-container {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    min-height: 100vh;
+    padding: 60px 20px 40px;
+    text-align: center;
+    box-sizing: border-box;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-title {
+    font-size: 3.5em;
+    font-weight: 800;
+    color: #d6336c;
+    margin-bottom: 10px;
+}
+
+.app-container p {
+    font-size: 1.2em;
+    color: #555;
+    margin-bottom: 40px;
+}
+
+.game-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; /* Reduced gap */
+    padding-bottom: 40px;
+}
+
+.game-link {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: #333;
+    width: 220px; /* Reduced width to fit 4 across */
+    padding: 15px; /* Adjusted padding */
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.game-link:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.game-link.disabled {
+    filter: grayscale(80%);
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.game-link .game-image {
+    width: 100%;
+    height: 140px; /* Adjusted height */
+    object-fit: cover;
+    object-position: top;
+    border-radius: 15px;
+    margin-bottom: 15px; /* Adjusted margin */
+}
+
+.game-link .game-title {
+    font-size: 1.3em; /* Slightly smaller font */
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.play-button {
+    background: linear-gradient(45deg, #f78ca0, #f9748f);
+    color: white;
+    font-size: 1em;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease;
+}
+
+.game-link:hover:not(.disabled) .play-button {
+    background: linear-gradient(45deg, #f9748f, #f78ca0);
+}
+
+.archive-link {
+    margin-top: 30px;
+}
+
+.archive-link a {
+    color: #d6336c;
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.2s;
+}
+
+.archive-link a:hover {
+    color: #b32a57;
+}
+
+/* --- END MENU STYLES --- */
+
+#game-canvas {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.maze-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#classic-maze-game {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+}
+
+#main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+#dynamic-header {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--header-color);
+    text-align: center;
+    margin: 10px 0;
+    flex-shrink: 0;
+}
+
+#game-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#character-selection {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-right: 15px;
+}
+
+.character-btn {
+    width: clamp(60px, 15vw, 80px);
+    height: clamp(60px, 15vw, 80px);
+    object-fit: cover;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.character-btn.selected {
+    border-color: var(--header-color);
+}
+
+.side-character {
+    width: clamp(60px, 15vw, 120px);
+    height: clamp(60px, 15vw, 120px);
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+#game-container {
+    display: grid;
+    background-color: var(--maze-bg);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    touch-action: none;
+    position: relative;
+    border: 2px solid var(--wall-color);
+    aspect-ratio: 1 / 1;
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.cell { position: relative; box-sizing: border-box; }
+.start-cell { background-color: var(--start-color); }
+.goal-cell { background-color: var(--goal-color); }
+.wall-top { border-top: 1px solid var(--wall-color); }
+.wall-right { border-right: 1px solid var(--wall-color); }
+.wall-bottom { border-bottom: 1px solid var(--wall-color); }
+.wall-left { border-left: 1px solid var(--wall-color); }
+
+#player {
+    position: absolute;
+    transition: transform 0.05s linear;
+    z-index: 10;
+    object-fit: contain;
+}
+
+#win-modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+.modal-content { background-color: #fff; padding: 20px; width: 85%; max-width: 500px; text-align: center; border-radius: 10px; animation: modal-appear 0.3s ease; }
+.character-images { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+.character-images img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+@keyframes modal-appear { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.control-button { padding: 8px 12px; font-size: 14px; cursor: pointer; border-radius: 5px; border: none; background-color: var(--button-bg); color: white; transition: background-color 0.2s; width: 100%; box-sizing: border-box; }
+.control-button:hover, .control-button.active { background-color: var(--button-hover-bg); }
+
+#dropdown-controls { margin-bottom: 5px; }
+.dropdown { position: relative; display: inline-block; }
+.dropdown-content { display: none; position: absolute; background-color: #f1f1f1; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 101; border-radius: 5px; overflow: hidden; }
+.dropdown-content.show { display: block; }
+.dropdown-content .control-button { background-color: #f1f1f1; color: black; text-align: left; }
+.dropdown-content .control-button:hover { background-color: #ddd; }
+.dropdown-content .control-button.active { background-color: var(--button-hover-bg); color: white; }
+
+#side-controls { display: none; flex-direction: column; gap: 10px; margin-left: 15px; }
+
+#touch-controls {
+    display: none; /* Hidden by default */
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#touch-controls button {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+}
+
+@media (orientation: portrait) and (max-width: 768px) {
+    #touch-controls {
+        display: flex; /* Show on smaller, portrait-oriented devices */
+    }
+}
+
+@media (orientation: portrait) {
+    #main-content { flex-direction: column; }
+    #game-container { width: 90vw; height: 90vw; }
+    #side-controls { display: none; }
+    #dropdown-controls { display: block; }
+    #character-selection { display: none; }
+}
+
+@media (orientation: landscape) {
+    #main-content { flex-direction: row; justify-content: center; align-items: center;}
+    #character-selection { display: grid; }
+    #game-area { flex-direction: row; }
+    #game-container { height: 80vh; width: 80vh; }
+    #dropdown-controls { display: none; }
+    #side-controls { display: flex; }
+}
