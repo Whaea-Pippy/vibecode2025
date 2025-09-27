@@ -5,37 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Arcade</title>
     <link rel="stylesheet" href="style.css">
+    <script src="main.js" type="module"></script>
 </head>
-<body>
+<body class="no-scroll">
     <div id="app-container">
         <h1 class="app-title">Game Arcade</h1>
-        <p>Choose a game to play!</p>
-
-        <div class="game-links">
-            <a href="multi_maze_rectangle.html" class="game-link">
-                <img src="/images/gabby/gabby.jpg" alt="Multi Maze" class="game-image">
-                <div class="game-title">Multi-Maze - Rectangle</div>
-                <div class="play-button">Play Now</div>
-            </a>
-            <a href="multi_maze_circle.html" class="game-link">
-                <img src="/images/gabby/gabby.jpg" alt="Multi Maze" class="game-image">
-                <div class="game-title">Multi-Maze - Circle</div>
-                <div class="play-button">Play Now</div>
-            </a>
-            <a href="multi_patterns.html" class="game-link">
-                <img src="/images/gabby/pandy.jpg" alt="Multi Patterns" class="game-image">
-                <div class="game-title">Multi Patterns</div>
-                <div class="play-button">Play Now</div>
-            </a>
-            <a href="multi_counting.html" class="game-link">
-                <img src="/images/ryder.jpg" alt="Multi Counting" class="game-image">
-                <div class="game-title">Multi Counting</div>
-                <div class="play-button">Play Now</div>
-            </a>
-        </div>
 
         <div class="archive-link">
-            <a href="v1_games/">Version 1 Games</a>
+            <a href="v1_games/index.html">Version 1 Games</a>
+        </div>
+
+        <div class="game-links">
+            <div class="game-link" data-game="multi_maze_rectangle.html">
+                <img src="/images/ZOG/team_zog.jpg" alt="Multi Maze - Rectangle" class="game-image">
+                <div class="game-title">Multi Maze Rectangle</div>
+                <button class="play-button">Play</button>
+            </div>
+            <div class="game-link" data-game="multi_maze_circle.html">
+                <img src="/images/skye.jpg" alt="Multi Maze - Circle" class="game-image">
+                <div class="game-title">Multi Maze Circle</div>
+                <button class="play-button">Play</button>
+            </div>
+            <div class="game-link" data-game="multi_patterns.html">
+                <img src="/images/gabby/gabby.jpg" alt="Multi Patterns" class="game-image">
+                <div class="game-title">Multi Pattern Game</div>
+                <button class="play-button">Play</button>
+            </div>
+            <div class="game-link" data-game="multi_counting.html">
+                <img src="/images/gabby/kittyfairy.jpg" alt="Multi Counting Game" class="game-image">
+                <div class="game-title">Multi Counting Game</div>
+                <button class="play-button">Play</button>
+            </div>
         </div>
     </div>
 </body>

@@ -5,9 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multi Counting</title>
     <link rel="stylesheet" href="multi_counting.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <h1>Multi Counting</h1>
-    <script src="multi_counting.js"></script>
+    <div id="app-container">
+        <div class="header">
+            <a id="home-link" href="index.html">Back to Arcade</a>
+            <h1 class="app-title">How many are ready to play?</h1>
+        </div>
+
+        <div id="controls-container">
+            <div id="theme-selection" class="control-group">
+                <button class="theme-btn active" data-theme="everyone">Everyone</button>
+                <button class="theme-btn" data-theme="pawPatrol">Paw Patrol</button>
+                <button class="theme-btn" data-theme="gabby">Gabby</button>
+                <button class="theme-btn" data-theme="zog">Zog</button>
+            </div>
+            <div id="difficulty-selection" class="control-group">
+                <button class="difficulty-btn active" data-difficulty="easy">Easy (1-6)</button>
+                <button class="difficulty-btn" data-difficulty="medium">Medium (7-11)</button>
+                <button class="difficulty-btn" data-difficulty="hard">Hard (0-20)</button>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <div id="character-container"></div>
+            <div id="number-buttons"></div>
+            <div id="result-message"></div>
+            <button id="play-again-btn" class="hidden">Play Again</button>
+        </div>
+
+    </div>
+    <script type="module" src="multi_counting.js"></script>
 </body>
 </html>

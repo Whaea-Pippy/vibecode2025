@@ -1,0 +1,238 @@
+:root {
+    --background-color: #f7f9fc;
+    --header-color: #007a87;
+    --button-bg: #007a87;
+    --button-hover-bg: #005f6b;
+    --correct-color: #28a745;
+    --incorrect-color: #dc3545;
+    --noise-texture: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.02"/></svg>');
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrolling on the body */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align to the top */
+    background-color: var(--background-color);
+    text-align: center;
+    position: relative;
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: var(--noise-texture);
+    z-index: -1;
+}
+
+#app-container {
+    width: 100%;
+    max-width: 900px;
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.header {
+    flex-shrink: 0; /* Prevent header from shrinking */
+    margin-bottom: 20px;
+}
+
+#home-link {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 10px 18px;
+    background-color: var(--button-bg);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.2s ease-in-out;
+    z-index: 10;
+}
+
+#home-link:hover {
+    background-color: var(--button-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.app-title {
+    color: var(--header-color);
+    margin: 0;
+    font-size: clamp(1.8rem, 4vh, 2.5rem); /* Responsive font size */
+}
+
+#controls-container {
+    flex-shrink: 0; /* Prevent controls from shrinking */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 2vh; /* Use viewport height unit */
+    flex-wrap: wrap;
+}
+
+.control-group { display: flex; gap: 10px; }
+
+.theme-btn, .difficulty-btn {
+    padding: 8px 18px;
+    font-size: clamp(0.8rem, 2vh, 1rem);
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 20px;
+    border: 2px solid var(--button-bg);
+    background-color: white;
+    color: var(--button-bg);
+    transition: all 0.2s;
+}
+
+.theme-btn:hover, .difficulty-btn:hover { background-color: #f0f0f0; }
+
+.theme-btn.active, .difficulty-btn.active {
+    background-color: var(--button-bg);
+    color: white;
+}
+
+#game-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+#character-container {
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    gap: 2vmin; /* Default for easy */
+    margin-bottom: 2vh;
+    overflow: hidden; /* Hide overflow instead of scrolling */
+}
+
+/* Override gap for medium and hard */
+#character-container.difficulty-medium {
+    gap: 1vmin;
+}
+#character-container.difficulty-hard {
+    gap: 0.5vmin;
+}
+
+/* Difficulty-based image sizing */
+.difficulty-easy .character-img {
+    width: clamp(100px, 15vmax, 180px);
+    height: clamp(100px, 15vmax, 180px);
+}
+
+.difficulty-medium .character-img {
+    width: clamp(60px, 9vmax, 100px);
+    height: clamp(60px, 9vmax, 100px);
+}
+
+.difficulty-hard .character-img {
+    width: clamp(40px, 6vmax, 70px);
+    height: clamp(40px, 6vmax, 70px);
+}
+
+.character-img {
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: appear 0.5s ease-out forwards;
+    background-color: white;
+}
+
+@keyframes appear { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+#number-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5vmin;
+    margin-bottom: 2vh;
+    flex-shrink: 0; /* Prevent this container from shrinking */
+}
+
+.number-btn {
+    width: clamp(45px, 9vmin, 65px);
+    height: clamp(45px, 9vmin, 65px);
+    font-size: clamp(1rem, 3.5vmin, 1.6rem);
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--button-bg);
+    color: white;
+    transition: background-color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 95, 107, 0.3);
+}
+
+.number-btn:hover { transform: translateY(-3px); }
+
+/* Adjustments for hard mode buttons */
+.difficulty-hard + #number-buttons {
+    gap: 0.8vmin;
+}
+
+.difficulty-hard + #number-buttons .number-btn {
+    width: clamp(35px, 6vmin, 45px);
+    height: clamp(35px, 6vmin, 45px);
+    font-size: clamp(0.8rem, 2vmin, 1rem);
+}
+
+.number-btn.shake { animation: shake 0.5s; }
+
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+#result-message {
+    font-size: clamp(1.2rem, 3.5vh, 1.5rem);
+    font-weight: bold;
+    min-height: 4.5vh;
+    margin-bottom: 1vh;
+}
+
+#result-message.correct { color: var(--correct-color); }
+#result-message.incorrect { color: var(--incorrect-color); }
+
+#play-again-btn {
+    padding: 12px 30px;
+    font-size: clamp(1rem, 2.5vh, 1.1rem);
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--button-bg);
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.hidden { display: none; }
+
+@media (max-width: 600px) {
+    #controls-container { flex-direction: column; }
+}

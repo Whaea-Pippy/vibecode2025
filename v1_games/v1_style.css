@@ -1,0 +1,99 @@
+/* V1 Games - Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap');
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    margin: 0;
+    color: #333;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+#app-container {
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.app-title {
+    font-size: 3em;
+    font-weight: 800;
+    color: #3d5af1;
+    margin-bottom: 40px;
+}
+
+.game-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-content: center;
+}
+
+.game-link {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    text-decoration: none;
+    color: #333;
+    padding: 15px 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.game-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.game-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 20px;
+    border: 3px solid #eee;
+}
+
+.game-title {
+    font-size: 1.1em;
+    font-weight: 700;
+    text-align: left;
+}
+
+.return-link {
+    background: linear-gradient(45deg, #f78ca0, #f9748f);
+    justify-content: center;
+}
+
+.return-link .game-title {
+    color: white;
+    text-align: center;
+}
+
+@media (max-width: 992px) {
+    .game-links {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .game-links {
+        grid-template-columns: 1fr;
+    }
+    .app-title {
+        font-size: 2.2em;
+    }
+}

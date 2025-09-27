@@ -7,7 +7,39 @@
     <link rel="stylesheet" href="multi_patterns.css">
 </head>
 <body>
-    <h1>Multi Patterns</h1>
-    <script src="multi_patterns.js"></script>
+    <div id="app-container">
+        <div class="header">
+            <a id="home-link" href="index.html">Back to Arcade</a>
+            <h1 class="app-title">Multi Patterns</h1>
+        </div>
+
+        <div id="controls-container">
+            <div id="theme-selection" class="control-group">
+                <button class="theme-btn active" data-theme="everyone">Everyone</button>
+                <button class="theme-btn" data-theme="pawPatrol">Paw Patrol</button>
+                <button class="theme-btn" data-theme="gabby">Gabby</button>
+                <button class="theme-btn" data-theme="zog">Zog</button>
+            </div>
+            <div id="difficulty-selection" class="control-group">
+                <button class="difficulty-btn active" data-length="2">2</button>
+                <button class="difficulty-btn" data-length="3">3</button>
+                <button class="difficulty-btn" data-length="4">4</button>
+            </div>
+        </div>
+
+        <div id="game-board">
+            <div id="pattern-container"></div>
+        </div>
+
+        <div id="character-selection-container"></div>
+
+        <div id="congratulations-container" style="display: none;">
+            <h2 id="congratulations-message"></h2>
+            <div id="congratulations-images"></div>
+        </div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script type="module" src="multi_patterns.js"></script>
 </body>
 </html>

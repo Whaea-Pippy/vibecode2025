@@ -7,27 +7,56 @@ body {
     color: #333;
 }
 
+/* Apply no-scroll only to the main page body */
+body.no-scroll {
+    overflow: hidden; /* Prevent all scrolling */
+}
+
 #app-container {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
     width: 100%;
     min-height: 100vh;
-    padding: 60px 20px 40px;
+    padding: 20px 20px 80px; /* Adjusted vertical padding */
     text-align: center;
     box-sizing: border-box;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .app-title {
     font-size: 3.5em;
     font-weight: 800;
     color: #d6336c;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-#app-container p {
-    font-size: 1.2em;
-    color: #555;
+.archive-link a {
+    background: linear-gradient(45deg, #89f7fe, #66a6ff);
+    color: white;
+    font-size: 1em;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.archive-link a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(45deg, #66a6ff, #89f7fe);
+}
+
+.archive-link {
     margin-bottom: 40px;
 }
 
@@ -35,8 +64,8 @@ body {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 30px;
-    padding-bottom: 40px; /* Add space at the bottom */
+    gap: 20px;
+    padding-bottom: 40px;
 }
 
 .game-link {
@@ -45,8 +74,8 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     text-decoration: none;
     color: #333;
-    width: 280px;
-    padding: 20px;
+    width: 220px;
+    padding: 15px;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
@@ -62,17 +91,17 @@ body {
 
 .game-link .game-image {
     width: 100%;
-    height: 160px;
+    height: 140px;
     object-fit: cover;
     object-position: top;
     border-radius: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .game-link .game-title {
-    font-size: 1.4em;
+    font-size: 1.3em;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .play-button {
