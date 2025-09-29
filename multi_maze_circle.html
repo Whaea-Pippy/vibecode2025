@@ -16,15 +16,23 @@
             <div class="maze-wrapper">
                 <multi-maze-circle></multi-maze-circle>
             </div>
-            <div id="circle-layer-selection">
-                <button id="layers-4" class="control-button">4 Layers</button>
-                <button id="layers-5" class="control-button">5 Layers</button>
-                <button id="layers-6" class="control-button">6 Layers</button>
+            <div id="circle-controls-panel">
+                <h2 class="panel-heading">CONTROLS</h2>
+                <div id="circle-layer-selection">
+                    <button id="layers-3" class="control-button">3 LAYERS</button>
+                    <button id="layers-4" class="control-button">4 Layers</button>
+                    <button id="layers-5" class="control-button">5 Layers</button>
+                    <button id="layers-6" class="control-button">6 Layers</button>
+                </div>
+                <a href="index.html" class="control-button back-button">Back to Arcade</a>
+                <div id="win-message" class="hidden">
+                    <h3>Congratulations!</h3>
+                    <p>You solved the maze!</p>
+                </div>
             </div>
         </div>
     </div>
     <script type="module" src="multi_maze_circle_component.js"></script>
     <script type="module" src="multi_maze_circle.js"></script>
-
 </body>
 </html>

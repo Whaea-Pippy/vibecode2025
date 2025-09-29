@@ -68,25 +68,51 @@ The project follows a simple, clear file structure:
 ### 5. "Multi Maze Circle" Game
 
 -   **Purpose:** A circular maze game where the user navigates a character from the outer edge to the center.
--   **Features:**
-    -   **Web Component Architecture:** The maze is built as a reusable Web Component (`<multi-maze-circle>`), encapsulating its own logic and rendering.
-    -   **Theme & Difficulty Selection:** The user can select character themes and the number of maze layers (4, 5, or 6).
-    -   **Responsive Controls:** Supports keyboard and mouse/touch drag-and-drop.
--   **Design:**
-    -   **Corrected Flexbox Layout:** The layout uses a robust Flexbox implementation to guarantee a "fit-to-screen" experience with no unwanted scrolling.
-    -   **Perfectly Circular Maze:** The maze container is forced into a `1:1` aspect ratio, ensuring the maze is always a perfect circle.
+-   **Architecture:** The core maze is a self-contained Web Component (`<multi-maze-circle>`).
+-   **Layout & Structure:**
+    -   **Three-Column Layout:** A main container using `flexbox` or `grid` to create three vertical sections.
+        -   **Left Panel (`#circle-character-selection`):** A grid to display selectable character images.
+        -   **Center Panel (`.maze-wrapper`):** A responsive container with a strict `aspect-ratio: 1 / 1` to ensure the maze canvas is always a perfect square, which in turn ensures the maze is a perfect circle.
+        -   **Right Panel (`#circle-layer-selection`):** The primary user control panel.
+    -   **No Scrolling:** The entire application must fit within the viewport without causing scrollbars.
+    -   **Responsive:** The three-column layout must collapse into a single vertical column on smaller screens.
+-   **Right Control Panel Details:** The right panel must be structured vertically with the following elements in this specific order:
+    1.  **Responsive Heading:** A main title for the control area.
+    2.  **Difficulty Buttons:** A group of four buttons for selecting maze complexity:
+        -   `"3 LAYERS"` (This is the default setting on load).
+        -   `"4 Layers"`
+        -   `"5 Layers"`
+        -   `"6 Layers"`
+        -   The currently selected button must have a distinct `active` class or style.
+    3.  **"Back to Arcade" Button:** A button that navigates the user back to `index.html`.
+    4.  **Congratulations Message Area:** An initially hidden area that will display a detailed success message upon winning.
+-   **Gameplay & Functionality:**
+    -   **Theme Integration:** The game dynamically loads character themes from `themes.js`.
+    -   **Player Avatar:** The user's selected character is used as the player piece in the maze.
+    -   **Movement:** The player avatar is moved by dragging with a mouse or finger.
+    -   **Trail:** A smooth, colorful trail is rendered behind the player as they move.
+    -   **Win Condition:** Successfully reaching the center of the maze. Upon winning, the "Congratulations Message" in the right panel becomes visible.
+    -   **Maze Logic:** The maze generation algorithm must be flawless, creating a valid, solvable path with no visual glitches, floating walls, or incorrect gaps.
 
 ---
 
 ## Current Development Plan
 
-**Status:** The "Multi Maze Circle" game is **Buggy**. The current maze generation algorithm, while functional, has several critical bugs that result in an incorrect and unfair maze layout. The visual feedback for player movement also requires refinement.
+**--- URGENT - CHANGE OF PLANS ---**
 
-**Next Steps: Bug Fixes and Refinements for "Multi Maze Circle"**
+**Current Priority:** Development on `multi-maze-circle` is **PAUSED**. The immediate and sole focus is to perfect the original, single-theme Paw Patrol circle maze (`v1_games/maze_circle.html`). The goal is to ensure it is 100% functional, bug-free, and polished.
 
-The following issues will be addressed in the next development cycle:
+**Future Plan:** Once the V1 maze is perfected and approved, its code will be used as the stable foundation to restart and correctly build the `multi-maze-circle` as described in Section 5 and the 'Next Steps' below.
 
-1.  **Correct Barrier Placement:** Fix a bug causing some barrier walls to "float" instead of properly connecting to both sides of a ring path, making them ineffective. All barriers must be correctly drawn.
-2.  **Ensure Single Gaps:** Fix a bug that can create multiple gaps in a single ring wall, violating the "one way through" principle for each layer. The algorithm will be corrected to generate exactly one gap (of the appropriate width) per ring wall.
-3.  **Align Final Exit Path:** Implement a new rule to improve the end-game experience. The gap leading *out* of the second-to-innermost ring (Ring 1) will be algorithmically aligned with the final exit gap *in* the innermost ring (Ring 0), creating a clear and satisfying final move to the goal.
-4.  **Smoother Player Trail:** Refactor the trail rendering logic. Instead of drawing a series of straight lines between discrete cell centers, the trail will be rendered as a smooth, curved path that more accurately follows the player's circular movement.
+**--- ORIGINAL PLAN (PRESERVED FOR FUTURE REFERENCE) ---**
+
+**Status:** The "Multi Maze Circle" game is **not complete**. The layout and functionality do not match the requirements specified in this blueprint.
+
+**Next Steps: Implement "Multi Maze Circle" Correctly**
+
+The immediate goal is to build the game exactly as described in section 5 of this document.
+
+1.  **Implement the Full Right Panel:** Modify `multi_maze_circle.html` to create the complete right-side control panel, including the heading, the four layer buttons, the "Back to Arcade" button, and the placeholder for the win message.
+2.  **Set Default State:** Modify `multi_maze_circle_component.js` to ensure that the "3 LAYERS" difficulty is selected by default when the game loads.
+3.  **Ensure Correct Maze Logic:** Review and fix the maze generation algorithm in the component to ensure it is 100% bug-free and generates a perfect, solvable maze every time, for every difficulty level.
+4.  **Finalize Layout and Styling:** Adjust `multi_maze_circle.css` to ensure the three-column layout is implemented correctly, is fully responsive, and has no scrollbars.
