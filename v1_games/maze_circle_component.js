@@ -127,7 +127,6 @@ class MazeCircle extends HTMLElement {
         this.drawAll();
     }
     
-    // New generation logic based on user's plain English rules
     generateSolvableMaze() {
         const { rings, seed } = this.settings;
         const { radii, ringWidth, innerRadius } = this.getRadii();
@@ -136,10 +135,9 @@ class MazeCircle extends HTMLElement {
         let rngSeed = seed;
         const random = () => { rngSeed = (rngSeed * 9301 + 49297) % 233280; return rngSeed / 233280; };
 
-        const gapLinearWidth = ringWidth; // Rule #2: Fixed linear width
+        const gapLinearWidth = ringWidth;
         const generatedGaps = [];
 
-        // Rule #4: Generate from outside in
         let lastGapAngle = random() * 2 * Math.PI; 
         generatedGaps[rings] = {
             radius: radii[rings],
@@ -148,9 +146,9 @@ class MazeCircle extends HTMLElement {
         };
 
         for (let i = rings - 1; i >= 0; i--) {
-            // Rule #4: Place inner gap in opposite half
-            const offset = (random() - 0.5) * (Math.PI / 2); // Add some wobble
-            let newAngle = (lastGapAngle + Math.PI + offset) % (2 * Math.PI);
+            const oppositeAngle = lastGapAngle + Math.PI;
+            const wobble = (random() - 0.5) * (Math.PI / 2);
+            let newAngle = (oppositeAngle + wobble) % (2 * Math.PI);
             
             generatedGaps[i] = {
                 radius: radii[i],
@@ -161,18 +159,15 @@ class MazeCircle extends HTMLElement {
         }
 
         const generatedBarriers = [];
-        // Rule #3: Place barriers at the midpoint arc between gaps
         for (let i = 0; i < rings; i++) {
             const gap1 = generatedGaps[i];
             const gap2 = generatedGaps[i+1];
 
             let barrierAngle = (gap1.angle + gap2.angle) / 2;
-            // Handle wraparound case for midpoint calculation
             if (Math.abs(gap1.angle - gap2.angle) > Math.PI) {
                 barrierAngle = (barrierAngle + Math.PI) % (2 * Math.PI);
             }
             
-            // This logic ensures barrier doesn't clash with gaps
             generatedBarriers.push({ 
                 startRadius: radii[i],
                 endRadius: radii[i + 1],
@@ -205,7 +200,6 @@ class MazeCircle extends HTMLElement {
         this.ctx.lineWidth = 3;
         this.ctx.lineCap = 'round';
 
-        // Draw Ring Walls (arcs with gaps)
         for (let i = 0; i < gaps.length; i++) {
             const gap = gaps[i];
             if(!gap) continue;
@@ -216,7 +210,6 @@ class MazeCircle extends HTMLElement {
             this.ctx.stroke();
         }
 
-        // Draw Radial Barriers
         for (const barrier of barriers) {
             this.ctx.beginPath();
             this.ctx.moveTo(centerX + barrier.startRadius * Math.cos(barrier.angle), centerY + barrier.startRadius * Math.sin(barrier.angle));
@@ -226,13 +219,31 @@ class MazeCircle extends HTMLElement {
     }
 
     shuffleCharacters() {
-        if (!this.theme || !this.theme.characters) return;
+        if (!this.theme || !this.theme.characters || this.theme.characters.length === 0) {
+            this.goalCharacter = null;
+            this.selectedCharacter = null;
+            this.displayCharacters = [];
+            return;
+        }
+
         let characters = [...this.theme.characters];
-        this.goalCharacter = characters.find(c => c.isGoal) || characters.shift();
-        characters = characters.filter(c => !c.isGoal);
+        
+        let goalIndex = characters.findIndex(c => c.isGoal);
+        if (goalIndex !== -1) {
+            this.goalCharacter = characters[goalIndex];
+            characters.splice(goalIndex, 1);
+        } else {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            this.goalCharacter = characters[randomIndex];
+            characters.splice(randomIndex, 1);
+        }
+
         this.displayCharacters = characters.sort(() => 0.5 - Math.random()).slice(0, 6);
+
         if (this.displayCharacters.length > 0) {
             this.selectedCharacter = this.displayCharacters[0];
+        } else {
+            this.selectedCharacter = null; 
         }
     }
 
@@ -370,7 +381,7 @@ class MazeCircle extends HTMLElement {
         if (!size) return { radii: [] };
         const rings = this.settings.rings;
         const maxRadius = size / 2 - 10;
-        const minRadius = maxRadius * 0.2; // Rule #1: Innermost circle is 20% of outer
+        const minRadius = maxRadius * 0.2;
         const ringWidth = (maxRadius - minRadius) / rings;
         const radii = Array.from({ length: rings + 1 }, (_, i) => minRadius + (i / rings) * (maxRadius - minRadius));
         return { innerRadius: minRadius, ringWidth, radii };
@@ -395,7 +406,7 @@ class MazeCircle extends HTMLElement {
         if (dist < radii[0]) return { ring: -1, cell: -1 };
 
         let ring = radii.findIndex((r, i) => i > 0 && dist < r) -1;
-        if (ring < 0 && dist > radii[radii.length-1]) ring = this.settings.rings -1; // Handle being outside the last ring
+        if (ring < 0 && dist > radii[radii.length-1]) ring = this.settings.rings -1;
         if (ring < 0 || ring >= this.settings.rings) return null;
 
         const angle = (Math.atan2(dy, dx) + 2 * Math.PI) % (2 * Math.PI);
@@ -416,13 +427,12 @@ class MazeCircle extends HTMLElement {
     }
 
     isAngleBetween(angle, start, end) {
-        // Normalize angles to be between 0 and 2*PI
         angle = (angle + 2 * Math.PI) % (2 * Math.PI);
         start = (start + 2 * Math.PI) % (2 * Math.PI);
         end = (end + 2 * Math.PI) % (2 * Math.PI);
         
         if (start < end) return angle >= start && angle <= end;
-        return angle >= start || angle <= end; // Handles wraparound case
+        return angle >= start || angle <= end;
     }
 
     isValidMove(from, to) {
@@ -432,30 +442,34 @@ class MazeCircle extends HTMLElement {
         const fromAngle = this.getAngleForCoord(from);
         const toAngle = this.getAngleForCoord(to);
 
-        // Moving to center (Win condition)
         if (to.ring === -1) {
             if (from.ring !== 0) return false;
             const goalGap = gaps[0];
             return this.isAngleBetween(fromAngle, goalGap.angle - goalGap.angularWidth / 2, goalGap.angle + goalGap.angularWidth / 2);
         }
 
-        // Moving between rings (in/out)
         if (from.ring !== to.ring) {
             const ringToCross = (from.ring > to.ring) ? from.ring : to.ring;
-            if (Math.abs(from.ring - to.ring) !== 1) return false; // Not adjacent rings
+            if (Math.abs(from.ring - to.ring) !== 1) return false;
 
             const gapToCross = gaps[ringToCross];
-            const moveAngle = (fromAngle + toAngle) / 2;
-            if(Math.abs(fromAngle - toAngle) > Math.PI) moveAngle += Math.PI;
+            let moveAngle = (fromAngle + toAngle) / 2;
+            if(Math.abs(fromAngle - toAngle) > Math.PI) moveAngle = (moveAngle + Math.PI) % (2 * Math.PI);
 
             return this.isAngleBetween(moveAngle, gapToCross.angle - gapToCross.angularWidth / 2, gapToCross.angle + gapToCross.angularWidth / 2);
         }
 
-        // Moving within the same ring (sideways)
         if (from.ring === to.ring) {
+            if (barriers.length <= from.ring) return true; // Should not happen in a valid maze
             const barrier = barriers[from.ring];
-            // Check if the path between fromAngle and toAngle crosses the barrier.angle
-            return !this.isAngleBetween(barrier.angle, fromAngle, toAngle);
+            
+            const start = Math.min(fromAngle, toAngle);
+            const end = Math.max(fromAngle, toAngle);
+
+            if (end - start > Math.PI) { // Wraps around the 0/2PI point
+                return !(barrier.angle > end || barrier.angle < start);
+            }
+            return !(barrier.angle > start && barrier.angle < end);
         }
 
         return false;
