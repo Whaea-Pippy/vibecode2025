@@ -109,8 +109,11 @@ class MazeCircle extends HTMLElement {
         if (newSeed) this.settings.seed = Date.now();
 
         this.gameState.isWon = false;
-        const winMsg = document.getElementById('win-message');
-        if(winMsg) winMsg.classList.add('hidden');
+        const winOverlay = document.getElementById('win-overlay');
+        if(winOverlay) winOverlay.classList.add('hidden');
+        
+        const starsContainer = document.querySelector('.stars-container');
+        if (starsContainer) starsContainer.innerHTML = '';
 
         this.generateSolvableMaze();
         this.shuffleCharacters();
@@ -184,11 +187,9 @@ class MazeCircle extends HTMLElement {
         this.ctx.clearRect(0, 0, size, size);
 
         this.drawMaze();
+        this.drawTrail();
+        this.drawPlayer();
         this.drawGoal();
-        if (!this.gameState.isWon) {
-            this.drawTrail();
-            this.drawPlayer();
-        }
     }
 
     drawMaze() {
@@ -278,8 +279,14 @@ class MazeCircle extends HTMLElement {
         for (let i = 1; i < this.gameState.trail.length; i++) {
             const p1 = this.getCanvasCoords(this.gameState.trail[i - 1]);
             const p2 = this.getCanvasCoords(this.gameState.trail[i]);
-            const hue = (i * 20) % 360;
-            this.ctx.strokeStyle = `hsl(${hue}, 90%, 65%)`;
+
+            const gradient = this.ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+            const startHue = ((i - 1) * 10) % 360;
+            const endHue = (i * 10) % 360;
+            gradient.addColorStop(0, `hsl(${startHue}, 90%, 65%)`);
+            gradient.addColorStop(1, `hsl(${endHue}, 90%, 65%)`);
+
+            this.ctx.strokeStyle = gradient;
             this.ctx.beginPath();
             this.ctx.moveTo(p1.x, p1.y);
             this.ctx.lineTo(p2.x, p2.y);
@@ -288,7 +295,7 @@ class MazeCircle extends HTMLElement {
     }
 
     drawPlayer() {
-        if (!this.selectedCharacter) return;
+        if (!this.selectedCharacter || this.gameState.isWon) return;
         const center = this.getCanvasCoords(this.gameState.player);
         const { ringWidth } = this.getRadii();
         const size = ringWidth * 0.8;
@@ -308,7 +315,7 @@ class MazeCircle extends HTMLElement {
 
     drawImage(img, x, y, size, isPlayer) {
         this.ctx.save();
-        if (isPlayer) {
+        if (isPlayer && !this.gameState.isWon) {
             this.ctx.shadowColor = 'rgba(0, 123, 255, 0.9)';
             this.ctx.shadowBlur = 15;
         }
@@ -342,7 +349,8 @@ class MazeCircle extends HTMLElement {
     }
 
     handleDragMove(e) {
-        if (!this.gameState.isDragging || this.gameState.isWon) return;
+        if (this.gameState.isWon) return;
+        if (!this.gameState.isDragging) return;
         const gridPos = this.getGridCoords(this.getEventPosition(e));
 
         if (!gridPos || (gridPos.ring === this.gameState.player.ring && gridPos.cell === this.gameState.player.cell)) return;
@@ -356,10 +364,11 @@ class MazeCircle extends HTMLElement {
             }
 
             this.gameState.player = gridPos;
-            this.drawAll();
 
             if (gridPos.ring === -1) {
                 this.handleWin();
+            } else {
+                this.drawAll();
             }
         }
     }
@@ -367,11 +376,32 @@ class MazeCircle extends HTMLElement {
     handleDragEnd() { this.gameState.isDragging = false; }
 
     handleWin() {
+        if (this.gameState.isWon) return;
         this.gameState.isWon = true;
         this.gameState.isDragging = false;
-        const winMsg = document.getElementById('win-message');
-        if(winMsg) winMsg.classList.remove('hidden');
+        const winOverlay = document.getElementById('win-overlay');
+        if(winOverlay) {
+            winOverlay.classList.remove('hidden');
+            this.createFallingStars();
+        }
         this.drawAll();
+    }
+    
+    createFallingStars() {
+        const starsContainer = document.querySelector('.stars-container');
+        if (!starsContainer) return;
+
+        starsContainer.innerHTML = ''; // Clear old stars
+
+        const numStars = 50;
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDuration = `${2 + Math.random() * 3}s`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            starsContainer.appendChild(star);
+        }
     }
 
     getCanvasCenter = () => ({ centerX: parseFloat(this.canvas.style.width) / 2, centerY: parseFloat(this.canvas.style.height) / 2 });
@@ -460,13 +490,13 @@ class MazeCircle extends HTMLElement {
         }
 
         if (from.ring === to.ring) {
-            if (barriers.length <= from.ring) return true; // Should not happen in a valid maze
+            if (barriers.length <= from.ring) return true;
             const barrier = barriers[from.ring];
             
             const start = Math.min(fromAngle, toAngle);
             const end = Math.max(fromAngle, toAngle);
 
-            if (end - start > Math.PI) { // Wraps around the 0/2PI point
+            if (end - start > Math.PI) {
                 return !(barrier.angle > end || barrier.angle < start);
             }
             return !(barrier.angle > start && barrier.angle < end);
